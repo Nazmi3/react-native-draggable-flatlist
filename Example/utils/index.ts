@@ -1,17 +1,8 @@
 export function getColor(i: number, numItems: number = 25) {
-  const multiplier = 255 / (numItems - 1);
+  console.log("i", i, numItems)
+  const multiplier = 60 / (numItems - 1);
   const colorVal = i * multiplier;
-  return `rgb(${colorVal}, ${Math.abs(128 - colorVal)}, ${255 - colorVal})`;
+
+  return `rgb(107, ${152 - colorVal}, 35)`;
+  // return `rgb(${colorVal}, ${Math.abs(255 - colorVal)}, ${Math.abs(128 - colorVal)})`;
 }
-
-export const mapIndexToData = (_d: any, index: number, arr: any[]) => {
-  const backgroundColor = getColor(index, arr.length);
-  return {
-    text: `${index}`,
-    key: `key-${index}`,
-    backgroundColor,
-    height: 75,
-  };
-};
-
-export type Item = ReturnType<typeof mapIndexToData>;

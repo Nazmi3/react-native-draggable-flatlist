@@ -1729,6 +1729,13 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@react-native-async-storage/async-storage@^1.17.10":
+  version "1.17.10"
+  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.17.10.tgz#8d6a4771912be8454a9e215eebd469b1b8e2e638"
+  integrity sha512-KrR021BmBLsA0TT1AAsfH16bHYy0MSbhdAeBAqpriak3GS1T2alFcdTUvn13p0ZW6FKRD6Bd3ryU2zhU/IYYJQ==
+  dependencies:
+    merge-options "^3.0.4"
+
 "@react-native-community/cli-debugger-ui@^7.0.3":
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-7.0.3.tgz#3eeeacc5a43513cbcae56e5e965d77726361bcb4"
@@ -4689,6 +4696,11 @@ is-plain-obj@^1.0.0:
   resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-1.1.0.tgz#71a50c8429dfca773c92a390a4a03b39fcd51d3e"
   integrity sha512-yvkRyxmFKEOQ4pNXCmJG5AEQNlXJS5LaONXo5/cLdTZdWvsZ1ioJEonLGAosKlMWE8lwUy/bJzMjcw8az73+Fg==
 
+is-plain-obj@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz#45e42e37fccf1f40da8e5f76ee21515840c09287"
+  integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
+
 is-plain-object@^2.0.3, is-plain-object@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/is-plain-object/-/is-plain-object-2.0.4.tgz#2c163b3fafb1b606d9d17928f05c2a1c38e07677"
@@ -5712,6 +5724,13 @@ memory-cache@~0.2.0:
   resolved "https://registry.yarnpkg.com/memory-cache/-/memory-cache-0.2.0.tgz#7890b01d52c00c8ebc9d533e1f8eb17e3034871a"
   integrity sha512-OcjA+jzjOYzKmKS6IQVALHLVz+rNTMPoJvCztFaZxwG14wtAW7VRZjwTQu06vKCYOxh4jVnik7ya0SXTB0W+xA==
 
+merge-options@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/merge-options/-/merge-options-3.0.4.tgz#84709c2aa2a4b24c1981f66c179fe5565cc6dbb7"
+  integrity sha512-2Sug1+knBjkaMsMgf1ctR1Ujx+Ayku4EdJN4Z+C2+JzoeF7A3OZ9KM2GY0CpQS51NR61LTurMJrRKPhSs3ZRTQ==
+  dependencies:
+    is-plain-obj "^2.1.0"
+
 merge-stream@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/merge-stream/-/merge-stream-2.0.0.tgz#52823629a14dd00c9770fb6ad47dc6310f2c1f60"
@@ -6099,6 +6118,11 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
 ms@2.0.0:
   version "2.0.0"
@@ -6691,6 +6715,11 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha512-ravE6m9Atw9Z/jjttRUZ+clIXogdghyZAuWJ3qEzjT+jI/dL1ifAqhZeC5VHzQp1MSt1+jxKkFNemj/iO7tVUA==
 
+prettier@^2.7.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
+  integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
+
 pretty-bytes@5.6.0:
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-5.6.0.tgz#356256f643804773c82f64723fe78c92c62beaeb"
@@ -6752,7 +6781,7 @@ prompts@^2.0.1, prompts@^2.2.1, prompts@^2.3.2, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@*, prop-types@^15.6.0, prop-types@^15.7.2:
+prop-types@*, prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.7.2:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -6897,6 +6926,16 @@ react-native-codegen@^0.0.17:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
+react-native-draggable-dynamic-flatlist@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-draggable-dynamic-flatlist/-/react-native-draggable-dynamic-flatlist-1.0.4.tgz#9195ffb6220edeedabed7fb2069779013503c7f7"
+  integrity sha512-FSpwSaN6riqqLF70izzcQOZ5D+LvYWV0EzFWll5tBtIzLWI88tXrwFd/rNH8IKl3X5Bd4pl2MNUCEbP1LO51xw==
+
+react-native-draggable-flatlist@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-3.1.2.tgz#b66538007f645ccd851c729d4b8a8f7e07666d3f"
+  integrity sha512-cqBR+lZktTqHY/J7V0aq+TZNkuqeILxwZ5bBXKndokwH4qvZl7ifijM7LlfWhfhU1/pzjketTsX7P2zyojfAaQ==
+
 react-native-gesture-handler@~2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.2.1.tgz#672258aa5a40c92a97c736bdde0a8bd6c8c6c692"
@@ -6943,6 +6982,13 @@ react-native-swipeable-item@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/react-native-swipeable-item/-/react-native-swipeable-item-2.0.2.tgz#5cb31abb544f60ac654ea874dc1f06e3b8f5853b"
   integrity sha512-xuDkCQm3BZQV+iaMnlmQHG7YeZnxY85Zenoj4nuf90TnuuBIhlPYlzi8J81qoQbt5m4IcmoB+VTC9zJRYIm9vg==
+
+react-native-swipeable@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-swipeable/-/react-native-swipeable-0.6.0.tgz#0fe551330018b83c754d27f505709a594f554370"
+  integrity sha512-OJUmOtPAZ3s6OHdbmGdGBq3oNZaUFOV81UMQfO2fvIF2cUOMbjUKQCRU7EhijEyufiaMAlSu/VguCRAdLRLk3w==
+  dependencies:
+    prop-types "^15.5.10"
 
 react-native-web@0.17.7:
   version "0.17.7"
@@ -7015,6 +7061,11 @@ react-shallow-renderer@^16.13.1:
   dependencies:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
+
+react-swipe-button@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-swipe-button/-/react-swipe-button-1.0.1.tgz#7a57878207475ce1f81946fe035f44f5221012e8"
+  integrity sha512-2+aAujWn3gAiep6swZMXO4aEm+UEbTZxF+mrztN487mvpoR0Ps8TmyPs2uhquA9/4yioh7zZ+OLz2Vqi8WA5Cg==
 
 react-test-renderer@17.0.2, react-test-renderer@~17.0.2:
   version "17.0.2"
