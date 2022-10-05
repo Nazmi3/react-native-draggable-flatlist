@@ -18,14 +18,14 @@ module.exports = {
       },
     }),
   },
-  resolver: {
-    extraNodeModules: new Proxy(extraNodeModules, {
-      get: (target, name) =>
-        //redirects dependencies referenced from target/ to local node_modules
-        name in target
-          ? target[name]
-          : path.join(process.cwd(), `node_modules/${name}`),
-    }),
-  },
-  watchFolders,
+  // resolver: {
+  //   // extraNodeModules: new Proxy(extraNodeModules, {
+  //   //   get: (target, name) =>
+  //   //     //redirects dependencies referenced from target/ to local node_modules
+  //   //     name in target
+  //   //       ? target[name]
+  //   //       : path.join(process.cwd(), `node_modules/${name}`),
+  //   // }),
+  // },
+  // watchFolders,
 };
