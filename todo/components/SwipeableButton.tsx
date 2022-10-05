@@ -11,9 +11,10 @@ import DraggableFlatList, {
   ScaleDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import { Item, getColor } from "../utils";
+import { Item, getColor } from "../src/utils";
 import { Swipeable } from "react-native-gesture-handler";
 import moment from "moment";
+import { SharedElement } from "react-navigation-shared-element";
 
 let row: Array<any> = [];
 let index = 0;
@@ -37,6 +38,7 @@ function getBackgroundColor(item) {
 }
 
 const SwipeableButton = ({
+  navigation,
   item,
   index,
   drag,
@@ -71,39 +73,49 @@ const SwipeableButton = ({
   };
 
   return (
-    <Swipeable
-      renderLeftActions={(progress, dragX) =>
-        renderRightActions(progress, dragX, () => console.log("on click"))
-      }
-      onSwipeableWillOpen={() => {
-        console.log("on swipeable will open", item);
-        deleteTODO(item);
-        closeRow();
-      }}
-      ref={(ref) => (row[item.key] = ref)}
-      leftOpenValue={-100}
-    >
-      <TouchableOpacity
-        activeOpacity={1}
-        onLongPress={drag}
-        delayLongPress={200}
-        disabled={isActive}
-        style={[
-          styles.rowItem,
-          { borderColor: isActive ? "red" : getBackgroundColor(item) },
-        ]}
+    <SharedElement id={item.time}>
+      <Swipeable
+        renderLeftActions={(progress, dragX) =>
+          renderRightActions(progress, dragX, () => console.log("on click"))
+        }
+        onSwipeableWillOpen={() => {
+          console.log("on swipeable will open", item);
+          deleteTODO(item);
+          closeRow();
+        }}
+        ref={(ref) => (row[item.key] = ref)}
+        leftOpenValue={-100}
       >
-        <Text style={[styles.text, { fontSize: (rate / (index + rate)) * 30 }]}>
-          {item.text}
-        </Text>
-        <Text>
-          {item.time
-            ? moment(item.time).format("YYYY-MM-DD hh:mm a")
-            : undefined}
-        </Text>
-        <Text>{item.duration / (1000 * 60) + " M"}</Text>
-      </TouchableOpacity>
-    </Swipeable>
+        <TouchableOpacity
+          activeOpacity={1}
+          onLongPress={drag}
+          onPress={() => {
+            console.log("button clicked");
+            navigation.navigate("Details", {
+              todo: item,
+            });
+          }}
+          delayLongPress={200}
+          disabled={isActive}
+          style={[
+            styles.rowItem,
+            { borderColor: isActive ? "red" : getBackgroundColor(item) },
+          ]}
+        >
+          <Text
+            style={[styles.text, { fontSize: (rate / (index + rate)) * 30 }]}
+          >
+            {item.text}
+          </Text>
+          <Text>
+            {item.time
+              ? moment(item.time).format("YYYY-MM-DD hh:mm a")
+              : undefined}
+          </Text>
+          <Text>{item.duration / (1000 * 60) + " M"}</Text>
+        </TouchableOpacity>
+      </Swipeable>
+    </SharedElement>
   );
 };
 
