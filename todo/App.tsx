@@ -74,6 +74,15 @@ export default function App() {
               onEnded={({ nativeEvent }) => basicRef.current.dragToNow()}
             >
               <PinchGestureHandler
+                ref={itemPinch}
+                shouldCancelWhenOutside={false}
+                onBegan={handleGestureStart}
+                onHandlerStateChange={({ nativeEvent }) => {
+                  console.log(
+                    "on gesture event",
+                    getStateName(nativeEvent.state)
+                  );
+                }}
                 onEnded={handlePinch}
                 onFinalize={() => {
                   console.log("on filnalize");
