@@ -30,6 +30,22 @@ export default function App() {
     lastGestureRef.current[currentGesture.identifier] = currentGesture;
   }
 
+  function getStateName(state) {
+    switch (state) {
+      case State.ACTIVE:
+        return "active";
+      case State.BEGAN:
+        return "began";
+      case State.CANCELLED:
+        return "cancelled";
+      case State.END:
+        return "end";
+      case State.FAILED:
+        return "failed";
+      case State.UNDETERMINED:
+        return "undetermined";
+    }
+  }
   function prepareNewTODO() {
     setNewTODO({});
     setModalVisible(true);
