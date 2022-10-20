@@ -1,5 +1,4 @@
 export function getColor(i: number, numItems: number = 25) {
-  console.log("i", i, numItems)
   const multiplier = 60 / (numItems - 1);
   const colorVal = i * multiplier;
 

@@ -5,7 +5,7 @@ import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 
-import { mapIndexToData, Item } from "../utils"
+import { mapIndexToData, Item } from "../utils";
 
 const NUM_ITEMS = 10;
 
@@ -33,14 +33,12 @@ export default function Basic() {
   };
 
   return (
-
     <DraggableFlatList
       data={data}
       onDragEnd={({ data }) => setData(data)}
       keyExtractor={(item) => item.key}
       renderItem={renderItem}
     />
-
   );
 }
 

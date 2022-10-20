@@ -16,17 +16,17 @@ import { ColorSchemeName, Pressable } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import NotFoundScreen from "../screens/NotFoundScreen";
-import BasicScreen from "../screens/BasicScreen";
-import SwipeableScreen from "../screens/SwipeableScreen";
+import NotFoundScreen from "../src/screens/NotFoundScreen";
+import BasicScreen from "../src/screens/HomeScreen";
+import SwipeableScreen from "../src/screens/SwipeableScreen";
 import {
   RootStackParamList,
   RootTabParamList,
   RootTabScreenProps,
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
-import NestedScreen from "../screens/NestedScreen";
-import HorizontalScreen from "../screens/HorizontalScreen";
+import NestedScreen from "../src/screens/NestedScreen";
+import HorizontalScreen from "../src/screens/HorizontalScreen";
 
 export default function Navigation({
   colorScheme,

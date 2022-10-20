@@ -16,6 +16,22 @@ import { Swipeable } from "react-native-gesture-handler";
 import moment from "moment";
 import { SharedElement } from "react-navigation-shared-element";
 
+export function getStringDuration(duration) {
+  let hours = 0;
+  let minutes = duration / (1000 * 60);
+  let space = "";
+  if (duration / (1000 * 60) > 60) {
+    hours = Math.floor(duration / (1000 * 60) / 60);
+    minutes = minutes - hours * 60;
+    space = minutes > 0 ? " " : "";
+  }
+  return (
+    (hours > 0 ? hours + " hr" : "") +
+    space +
+    (minutes > 0 ? minutes + " m" : "")
+  );
+}
+
 let row: Array<any> = [];
 let index = 0;
 let lastTime = 0;
@@ -47,7 +63,7 @@ const SwipeableButton = ({
 }: RenderItemParams<Item>) => {
   const closeRow = () => {
     console.log("closerow");
-    // if (prevOpenedRow && prevOpenedRow !== row[item.key]) {
+    // if (pr OpenedRow && prevOpenedRow !== row[item.key]) {
     row[item.key].close();
     // }
     // prevOpenedRow = row[item.key];
@@ -87,7 +103,7 @@ const SwipeableButton = ({
         leftOpenValue={-100}
       >
         <TouchableOpacity
-          activeOpacity={1}
+          activeOpacity={0.8}
           onLongPress={drag}
           onPress={() => {
             console.log("button clicked");
@@ -99,20 +115,43 @@ const SwipeableButton = ({
           disabled={isActive}
           style={[
             styles.rowItem,
-            { borderColor: isActive ? "red" : getBackgroundColor(item) },
+            {
+              borderRadius: 10,
+              borderColor: isActive ? "red" : getBackgroundColor(item),
+              padding: 10,
+              elevation: 1,
+            },
           ]}
         >
-          <Text
-            style={[styles.text, { fontSize: (rate / (index + rate)) * 30 }]}
-          >
-            {item.text}
-          </Text>
-          <Text>
-            {item.time
-              ? moment(item.time).format("YYYY-MM-DD hh:mm a")
-              : undefined}
-          </Text>
-          <Text>{item.duration / (1000 * 60) + " M"}</Text>
+          <View>
+            <Text
+              style={[
+                styles.text,
+                {
+                  fontSize: (rate / (index + rate)) * 30,
+                  textAlign: "center",
+                },
+              ]}
+            >
+              {item.text}
+            </Text>
+            <Text
+              style={{
+                textAlign: "center",
+              }}
+            >
+              {item.time
+                ? moment(item.time).format("YYYY-MM-DD hh:mm a")
+                : undefined}
+            </Text>
+            <Text
+              style={{
+                textAlign: "center",
+              }}
+            >
+              {getStringDuration(item.duration)}
+            </Text>
+          </View>
         </TouchableOpacity>
       </Swipeable>
     </SharedElement>
@@ -121,7 +160,6 @@ const SwipeableButton = ({
 
 const styles = StyleSheet.create({
   rowItem: {
-    height: 100,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "white",
@@ -138,7 +176,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   listItem: {
-    height: 75,
     alignItems: "center",
     justifyContent: "center",
   },

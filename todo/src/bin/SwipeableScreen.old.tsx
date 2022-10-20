@@ -45,7 +45,6 @@ function App() {
         data={data}
         renderItem={renderItem}
         onDragEnd={({ data }) => setData(data)}
-        activationDistance={20}
       />
     </View>
   );
