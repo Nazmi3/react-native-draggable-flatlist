@@ -19,105 +19,103 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DraggableFlatList from "react-native-draggable-flatlist";
 
 import { Item, getColor } from "../utils";
-import SwipeableButton from "../../components/SwipeableButton";
-import { PinchGestureHandler, State } from "react-native-gesture-handler";
-import { useFocusEffect } from "@react-navigation/native";
+import { SharedElement } from "react-navigation-shared-element";
 
-export default React.forwardRef(
-  (
-    {
-      modalVisible,
-      setModalVisible,
-      newTODO,
-      setNewTODO,
-      pinchOutside,
-      navigation,
-      children,
-      addTODO,
-      TODOs,
-    },
-    uppRef
-  ) => {
-    // return (<View></View>)
-    const nameInputRef = useRef();
+const HomeScreen = (
+  {
+    modalVisible,
+    setModalVisible,
+    newTODO,
+    setNewTODO,
+    pinchOutside,
+    navigation,
+    children,
+    addTODO,
+    TODOs,
+  },
+  uppRef
+) => {
+  // return (<View></View>)
+  const nameInputRef = useRef();
 
-    function dragToNow() {
-      ToastAndroid.show("Dragging up timeline...", 1500);
-      let drag = TODOs[0].time - new Date().getTime();
-      let newTODOs = JSON.parse(JSON.stringify(TODOs));
-      for (let x = 0; x < newTODOs.length; x++) {
-        newTODOs[x].time = newTODOs[x].time - drag;
-      }
-      updateTODOs(newTODOs);
+  function dragToNow() {
+    ToastAndroid.show("Dragging up timeline...", 1500);
+    let drag = TODOs[0].time - new Date().getTime();
+    let newTODOs = JSON.parse(JSON.stringify(TODOs));
+    for (let x = 0; x < newTODOs.length; x++) {
+      newTODOs[x].time = newTODOs[x].time - drag;
     }
+    updateTODOs(newTODOs);
+  }
 
-    console.log("lower handler ref 2", uppRef);
+  console.log("lower handler ref 2", uppRef);
 
-    useEffect(() => {
-      if (modalVisible)
-        // nameInputRef.current.focus()
-        setTimeout(() => nameInputRef.current.focus(), 200);
-    }, [modalVisible]);
+  useEffect(() => {
+    if (modalVisible)
+      // nameInputRef.current.focus()
+      setTimeout(() => nameInputRef.current.focus(), 200);
+  }, [modalVisible]);
 
-    return (
-      <View style={{ display: "flex", flex: 1 }}>
-        <View style={{ padding: 10 }}>{children}</View>
+  return (
+    <View style={{ display: "flex", flex: 1, backgroundColor: "white" }}>
+      <View style={{ padding: 10 }}>{children}</View>
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            console.log("Modal has been closed.");
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          console.log("Modal has been closed.");
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <View
             style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
+              backgroundColor: "white",
+              borderRadius: 10,
+              padding: 10,
+              borderWidth: 1,
+              borderColor: getColor((1000 * 60 * 30) / (1000 * 60 * 90), 9),
             }}
           >
-            <View
-              style={{
-                backgroundColor: "white",
-                borderRadius: 10,
-                padding: 10,
-                borderWidth: 1,
-                borderColor: getColor((1000 * 60 * 30) / (1000 * 60 * 90), 9),
+            <TextInput
+              style={{ fontSize: 20 }}
+              ref={(ref) => {
+                nameInputRef.current = ref;
               }}
-            >
-              <TextInput
-                style={{ fontSize: 20 }}
-                ref={(ref) => {
-                  nameInputRef.current = ref;
-                }}
-                onChangeText={(t) => {
-                  setNewTODO({
-                    ...newTODO,
-                    text: t,
-                    key: t,
-                    backgroundColor: "green",
-                    height: 75,
-                    time: new Date().getTime(),
-                    duration: 1000 * 60 * 30,
-                  });
-                }}
-                onEndEditing={() => {
-                  console.log("on finish edit");
-                  setModalVisible(false);
-                  addTODO(newTODO, TODOs);
-                }}
-                placeholder="Name"
-                value={newTODO.text}
-              />
-              <Pressable onPress={() => setModalVisible(false)}>
-                <Text>Close</Text>
-              </Pressable>
-            </View>
+              onChangeText={(t) => {
+                setNewTODO({
+                  ...newTODO,
+                  text: t,
+                  key: t,
+                  backgroundColor: "green",
+                  height: 75,
+                  time: new Date().getTime(),
+                  duration: 1000 * 60 * 30,
+                });
+              }}
+              onEndEditing={() => {
+                console.log("on finish edit");
+                setModalVisible(false);
+                addTODO(newTODO, TODOs);
+              }}
+              placeholder="Name"
+              value={newTODO.text}
+            />
+            <Pressable onPress={() => setModalVisible(false)}>
+              <Text>Close</Text>
+            </Pressable>
           </View>
-        </Modal>
-      </View>
-    );
-  }
-);
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+export default React.forwardRef(HomeScreen);

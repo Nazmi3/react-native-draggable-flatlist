@@ -7,13 +7,14 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getStringDuration } from "../../components/SwipeableButton";
 import { HStack, VStack } from "@react-native-material/core";
-import { SharedElement } from "react-navigation-shared-element";
 import moment from "moment/moment";
 import DatePicker from "react-native-date-picker";
+import { SharedElement } from "react-navigation-shared-element";
 
 export const REPEAT = ["freeTime", "day", "weekDay", "month", "solatTime"];
 
@@ -66,8 +67,22 @@ const Details = ({ navigation, route: { params } }) => {
     return REPEAT[nextIndex];
   }
   return (
-    <>
-      <SharedElement id={todo.time}>
+    <SharedElement id={todo.text}>
+      <View
+        style={{
+          backgroundColor: "white",
+        }}
+      >
+        <Text
+          style={{
+            fontWeight: "bold",
+            fontSize: 20,
+            textAlign: "center",
+            padding: 10,
+          }}
+        >
+          {todo.text}
+        </Text>
         <VStack p={20} spacing={10}>
           <View
             style={{
@@ -137,36 +152,30 @@ const Details = ({ navigation, route: { params } }) => {
             <Text>{getStringDate(date.getTime())}</Text>
           </TouchableOpacity>
         </VStack>
-      </SharedElement>
-      <DatePicker
-        modal
-        open={open}
-        date={date}
-        mode="date"
-        onConfirm={(date) => {
-          setOpen(false);
-          console.log("date confirmed", date, date.getTime());
-          setDate(date);
-          updateTODO(todo.key, "time", date.getTime());
-        }}
-        onCancel={() => {
-          setOpen(false);
-        }}
-      />
-    </>
+        <DatePicker
+          modal
+          open={open}
+          date={date}
+          mode="date"
+          onConfirm={(date) => {
+            setOpen(false);
+            console.log("date confirmed", date, date.getTime());
+            setDate(date);
+            updateTODO(todo.key, "time", date.getTime());
+          }}
+          onCancel={() => {
+            setOpen(false);
+          }}
+        />
+      </View>
+    </SharedElement>
   );
 };
 
-Details.sharedElements = (route) => {
-  const { todo } = route.params;
-  console.log("item");
-  return [
-    {
-      id: todo.time,
-      animation: "move",
-      resize: "clip",
-    },
-  ];
+Details.sharedElements = (navigation) => {
+  let todo = navigation.params.todo;
+  console.log("navigation", todo.time);
+  return [{ id: todo.text, animation: "fade" }];
 };
 
 export default Details;

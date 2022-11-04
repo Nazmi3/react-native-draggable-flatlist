@@ -25,6 +25,11 @@ import { Image, Platform, Easing, UIManager } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
+import {
+  createSharedElementStackNavigator,
+  SharedElement,
+} from "react-navigation-shared-element";
+import { v4 as uuid } from "uuid";
 
 let storage = {
   async set(key: string, value: any) {
@@ -77,6 +82,7 @@ function Row(props) {
 
 function App1({ navigation }) {
   const defaultTODO = {
+    id: 0,
     repeat: false,
   };
   const isLoadingComplete = useCachedResources();
@@ -108,15 +114,11 @@ function App1({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       retrieveTODOs();
-      retrieveNextSolatTime();
     }, [])
   );
 
   useEffect(() => {
-    console.log(
-      "draggableIems",
-      draggableItems.map((d) => d.text)
-    );
+    console.log("uid", uuid());
   }, [draggableItems]);
 
   useEffect(() => {
@@ -150,7 +152,6 @@ function App1({ navigation }) {
       const TODO = newTODOs.splice(fromIndex, 1)[0];
       let toIndex;
       let newTime;
-      console.log("repeat", TODO.repeat);
 
       if (TODO.repeat.every) {
         newTime = new Date(TODO.time);
@@ -217,7 +218,6 @@ function App1({ navigation }) {
       let isSameDate =
         date.toLocaleDateString() === new Date().toLocaleDateString();
       let happenToday = isSameDate;
-      console.log("happen today", newTODO.text);
       if (beginOfDay) {
         let label = new Date(newTODO.time).toDateString();
         if (date.getDate() === new Date().getDate() + 1) label = "Tomorrow";
@@ -226,12 +226,15 @@ function App1({ navigation }) {
         }
         if (!(index === 0 && happenToday))
           newDraggableItems.push({
+            id: label,
             isLabel: true,
             label: label,
           });
       }
 
-      newDraggableItems.push(JSON.parse(JSON.stringify(newTODO)));
+      newDraggableItems.push(
+        JSON.parse(JSON.stringify({ ...newTODO, id: newTODO.id }))
+      );
       lastTODODay = new Date(newTODO.time).getDay();
     });
     return newDraggableItems;
@@ -252,7 +255,6 @@ function App1({ navigation }) {
       let month = 11;
       let athanData = await storage.get("athanTimes");
       if (!athanData) {
-        console.log("fetch athan data");
         let resp = await axios.get(
           "http://api.aladhan.com/v1/calendar?latitude=3.080601&longitude=101.589644&month=" +
             month +
@@ -368,7 +370,7 @@ function App1({ navigation }) {
       let todosJSON = await AsyncStorage.getItem("TODOs");
       let newTODOs = JSON.parse(todosJSON);
 
-      // manipulate existing todos
+      // migrate existing todos
       newTODOs.map((newTODO, index) => {
         // if (newTODO.key === "Tidur") {
         //   newTODO.duration = 1000 * 60 * 60 * 3;
@@ -459,7 +461,7 @@ function App1({ navigation }) {
     let isLabel = params.item.isLabel;
     let draggableItem = params.item;
     return (
-      <View key={params.item.time}>
+      <View key={draggableItem.id}>
         {!isLabel && (
           <SwipeableButton
             {...params}
@@ -499,7 +501,7 @@ function App1({ navigation }) {
   }
 
   function prepareNewTODO() {
-    setNewTODO(defaultTODO);
+    setNewTODO({ ...defaultTODO, id: uuid() });
     setModalVisible(true);
   }
 
@@ -638,7 +640,9 @@ function App1({ navigation }) {
                       simultaneousHandlers={[tapHandler, pinchHandler]}
                       data={draggableItems}
                       onDragEnd={handleReposition}
-                      keyExtractor={(item) => item.key}
+                      keyExtractor={(item) => {
+                        return item.id;
+                      }}
                       renderItem={renderItem}
                       itemExitingAnimation={FadeOut.duration(3000)}
                       activationDistance={0}
@@ -654,17 +658,24 @@ function App1({ navigation }) {
   }
 }
 
-const Stack = createStackNavigator();
+const Stack = createSharedElementStackNavigator();
 
 function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={App1} />
+        <Stack.Screen
+          name="Home"
+          component={App1}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Details"
           component={TodoDetails}
-          options={({ route }) => ({ title: route.params.todo.text })}
+          options={({ route }) => ({
+            title: route.params.todo.text,
+            headerShown: false,
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>

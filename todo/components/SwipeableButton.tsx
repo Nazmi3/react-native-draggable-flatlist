@@ -89,7 +89,7 @@ const SwipeableButton = ({
   };
 
   return (
-    <SharedElement id={item.time}>
+    <SharedElement id={item.text}>
       <Swipeable
         renderLeftActions={(progress, dragX) =>
           renderRightActions(progress, dragX, () => console.log("on click"))
@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: "bold",
-    fontSize: 32,
   },
   underlayRight: {
     flex: 1,
