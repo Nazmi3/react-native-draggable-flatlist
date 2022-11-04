@@ -1,85 +1,51 @@
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
-import { View, Text, FlatList } from "react-native";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { View, Text, LayoutAnimation } from "react-native";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
-import Navigation from "./navigation";
 import HomeScreen from "./src/screens/HomeScreen";
 import "react-native-gesture-handler";
 import {
-  GestureDetector,
-  FlingGestureHandler,
   GestureHandlerRootView,
   PinchGestureHandler,
   State,
-  Directions,
-  Gesture,
   TapGestureHandler,
 } from "react-native-gesture-handler";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import TodoDetails from "./src/screens/TodoDetails";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { useImperativeHandle, Children } from "react";
 import { StyleSheet, ToastAndroid, StatusBar } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
-
 import { Item, getColor } from "./src/utils";
 import SwipeableButton from "./components/SwipeableButton";
 import Animated from "react-native-reanimated";
 import { FadeOut } from "react-native-reanimated";
+import { Image, Platform, Easing, UIManager } from "react-native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import moment from "moment";
 
-import { Image, Platform, Easing, Dimensions } from "react-native";
-
-const data = {
-  0: {
-    image: "https://placekitten.com/200/240",
-    text: "Chloe",
+let storage = {
+  async set(key: string, value: any) {
+    return AsyncStorage.setItem(key, JSON.stringify(value));
   },
-  1: {
-    image: "https://placekitten.com/200/201",
-    text: "Jasper",
-  },
-  2: {
-    image: "https://placekitten.com/200/202",
-    text: "Pepper",
-  },
-  3: {
-    image: "https://placekitten.com/200/203",
-    text: "Oscar",
-  },
-  4: {
-    image: "https://placekitten.com/200/204",
-    text: "Dusty",
-  },
-  5: {
-    image: "https://placekitten.com/200/205",
-    text: "Spooky",
-  },
-  6: {
-    image: "https://placekitten.com/200/210",
-    text: "Kiki",
-  },
-  7: {
-    image: "https://placekitten.com/200/215",
-    text: "Smokey",
-  },
-  8: {
-    image: "https://placekitten.com/200/220",
-    text: "Gizmo",
-  },
-  9: {
-    image: "https://placekitten.com/220/239",
-    text: "Kitty",
+  async get(key: string) {
+    try {
+      let stringData = await AsyncStorage.getItem(key);
+      return JSON.parse(stringData ?? "");
+    } catch (error) {
+      throw error;
+    }
   },
 };
+
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 function Row(props) {
   const { active, data } = props;
@@ -126,14 +92,36 @@ function App1({ navigation }) {
   const [newTODO, setNewTODO] = useState(defaultTODO);
   const [TODOs, setTODOs] = useState([]);
   const [draggableItems, setDraggableItems] = useState([]);
-  const [activationDistance, setActivationDistance] = useState(100);
+  const layoutAnimConfig = {
+    duration: 300,
+    create: {
+      type: LayoutAnimation.Types.easeInEaseOut,
+      property: LayoutAnimation.Properties.opacity,
+    },
+    // delete: {
+    //   duration: 100,
+    //   type: LayoutAnimation.Types.easeInEaseOut,
+    //   property: LayoutAnimation.Properties.opacity,
+    // },
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      retrieveTODOs();
+      retrieveNextSolatTime();
+    }, [])
+  );
 
   useEffect(() => {
-    getTODOs();
-  }, []);
+    console.log(
+      "draggableIems",
+      draggableItems.map((d) => d.text)
+    );
+  }, [draggableItems]);
 
   useEffect(() => {
     setDraggableItems(getDraggableItems(TODOs));
+    LayoutAnimation.configureNext(layoutAnimConfig);
   }, [TODOs]);
 
   async function deleteTODO(todo: any) {
@@ -162,14 +150,13 @@ function App1({ navigation }) {
       const TODO = newTODOs.splice(fromIndex, 1)[0];
       let toIndex;
       let newTime;
+      console.log("repeat", TODO.repeat);
+
       if (TODO.repeat.every) {
         newTime = new Date(TODO.time);
-        console.log("time", newTime);
-        console.log("set month", TODO.repeat.date);
         if (TODO.repeat.every === "month") {
-          console.log("set date", TODO.repeat.date);
           newTime.setMonth(newTime.getMonth() + 1);
-          newTime.setDate(TODO.repeat.date);
+          if (TODO.repeat.date) newTime.setDate(TODO.repeat.date);
         } else if (TODO.repeat.every === "day") {
           let moreDay = 1;
           while (newTime.getDate() + moreDay < new Date().getDate())
@@ -187,14 +174,21 @@ function App1({ navigation }) {
           }
           let lastTODO = TODOs[TODOs.length - 1];
           newTime.setTime(freeTime ?? lastTODO.time + lastTODO.duration);
+        } else if (TODO.repeat.every === "weekDay") {
+          let daysToNextWorkingDay;
+          // monday is 1
+          let currentDay = newTime.getDay();
+          daysToNextWorkingDay = currentDay === 5 ? 3 : 1;
+          let dayMillis = 1000 * 60 * 60 * 24;
+          newTime.setTime(newTime.getTime() + dayMillis * daysToNextWorkingDay);
+        } else if (TODO.repeat.every === "solatTime") {
+          newTime.setTime((await retrieveNextSolatTime()).valueOf());
         } else throw "no date set";
-        console.log("newtime", newTime);
 
         toIndex = getIndexForTime(newTODOs, newTime);
       } else {
         toIndex = getFreeIndexForDuration(newTODOs, fromIndex, TODO.duration);
         if (nextTime && nextTime.type === "fixed") {
-          console.log("set next time");
           newTime = new Date(TODO.time);
           newTime.setHours(nextTime.time, 0, 0, 0);
           newTime.setDate(newTime.getDate() + 1);
@@ -220,7 +214,10 @@ function App1({ navigation }) {
       let beginOfDay = new Date(newTODO.time).getDay() !== lastTODODay;
 
       let date = new Date(newTODO.time);
-      let happenToday = date.getDate() === new Date().getDate();
+      let isSameDate =
+        date.toLocaleDateString() === new Date().toLocaleDateString();
+      let happenToday = isSameDate;
+      console.log("happen today", newTODO.text);
       if (beginOfDay) {
         let label = new Date(newTODO.time).toDateString();
         if (date.getDate() === new Date().getDate() + 1) label = "Tomorrow";
@@ -242,7 +239,7 @@ function App1({ navigation }) {
 
   function getTodosFromDraggable(draggableItems) {
     draggableItems.map((draggableItem, index) => {
-      if (draggableItem.isLabel) {
+      if (draggableItem.isLabel === true) {
         draggableItems.splice(index, 1);
         return;
       }
@@ -250,28 +247,143 @@ function App1({ navigation }) {
     return draggableItems;
   }
 
-  async function getTODOs() {
+  async function retrieveNextSolatTime() {
+    try {
+      let month = 11;
+      let athanData = await storage.get("athanTimes");
+      if (!athanData) {
+        console.log("fetch athan data");
+        let resp = await axios.get(
+          "http://api.aladhan.com/v1/calendar?latitude=3.080601&longitude=101.589644&month=" +
+            month +
+            "&year=2022&annual=false&school=0&timezonestring=Asia/Kuala_Lumpur",
+          {
+            // params: {
+            // articleID: articleID
+            // }
+          }
+        );
+        athanData = {
+          month: month,
+          data: resp.data.data,
+        };
+        await storage.set("athanTimes", athanData);
+      } else {
+        console.log("use db athan data");
+      }
+
+      let timeDay0 = athanData.data[0];
+      // timings Object {
+      //   "Asr": "16:19 (+08)",
+      //   "Dhuhr": "12:57 (+08)",
+      //   "Fajr": "05:38 (+08)",
+      //   "Firstthird": "22:57 (+08)",
+      //   "Imsak": "05:28 (+08)",
+      //   "Isha": "20:08 (+08)",
+      //   "Lastthird": "02:57 (+08)",
+      //   "Maghrib": "18:57 (+08)",
+      //   "Midnight": "00:57 (+08)",
+      //   "Sunrise": "06:57 (+08)",
+      //   "Sunset": "18:57 (+08)",
+      // }
+      let date = timeDay0.date.gregorian.date;
+      let isyakHour = timeDay0.timings.Isha.slice(0, 2);
+      let isyakMinute = timeDay0.timings.Isha.slice(3, 5);
+      let nextPrayTime;
+
+      function getCurrentPray() {
+        let currentTime = moment().valueOf();
+        if (currentTime < getPrayTimeForToday("subuh").valueOf())
+          return "isyak";
+        else if (currentTime < getPrayTimeForToday("zohor").valueOf())
+          return "subuh";
+        else if (currentTime < getPrayTimeForToday("asar").valueOf())
+          return "zohor";
+        else if (currentTime < getPrayTimeForToday("maghrib").valueOf())
+          return "asar";
+        else if (currentTime < getPrayTimeForToday("isyak").valueOf())
+          return "maghrib";
+      }
+      let currentPray = getCurrentPray();
+
+      function prayMap(pray) {
+        switch (pray) {
+          case "subuh":
+            return "Fajr";
+          case "zohor":
+            return "Dhuhr";
+          case "asar":
+            return "Asr";
+          case "maghrib":
+            return "Maghrib";
+          case "isyak":
+            return "Isha";
+          default:
+            throw "cannot return pray map";
+        }
+      }
+
+      function getPrayTimeForToday(pray: string) {
+        let prayHour = timeDay0.timings[prayMap(pray)].slice(0, 2);
+        let prayMinute = timeDay0.timings[prayMap(pray)].slice(3, 5);
+        return moment().hour(prayHour).minute(prayMinute).second(0);
+      }
+      switch (currentPray) {
+        case "subuh":
+          nextPrayTime = getPrayTimeForToday("zohor");
+          break;
+        case "zohor":
+          nextPrayTime = getPrayTimeForToday("asar");
+          break;
+        case "asar":
+          nextPrayTime = getPrayTimeForToday("maghrib");
+          break;
+        case "maghrib":
+          nextPrayTime = getPrayTimeForToday("isyak");
+          break;
+        case "isyak":
+          nextPrayTime = getPrayTimeForToday("subuh");
+          let currentTime = moment();
+          if (
+            currentTime.hours() > nextPrayTime.hours() &&
+            currentTime.minutes() > nextPrayTime.minutes()
+          ) {
+            nextPrayTime.add(1, "days");
+          }
+          break;
+        default:
+          throw "cannot generate next pray time";
+      }
+
+      console.log("next subuh time", nextPrayTime);
+      return nextPrayTime;
+    } catch (error) {
+      console.log("error retrieve", error);
+      throw error;
+    }
+  }
+
+  async function retrieveTODOs() {
     try {
       let todosJSON = await AsyncStorage.getItem("TODOs");
       let newTODOs = JSON.parse(todosJSON);
 
       // manipulate existing todos
-      // newTODOs.map((newTODO, index) => {
-      //   if (newTODO.key === "Tidur") {
-      //     newTODO.duration = 1000 * 60 * 60 * 3;
-      //     // if (newTODO.isLabel === true) {
-      //     // newTODOs.splice(index, 1);
-      //   }
-      // });
-      // await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));
+      newTODOs.map((newTODO, index) => {
+        // if (newTODO.key === "Tidur") {
+        //   newTODO.duration = 1000 * 60 * 60 * 3;
+        // }
+        if (newTODO.isLabel === true) {
+          newTODOs.splice(index, 1);
+        }
+      });
+      await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));
 
-      console.log("dbTODOS", newTODOs);
       setTODOs(newTODOs ?? []);
     } catch (error) {}
   }
 
   function handlePinchStart({ nativeEvent: currentGesture }) {
-    console.log("pinch started");
     lastGestureRef.current[currentGesture.identifier] = currentGesture;
   }
 
@@ -289,13 +401,15 @@ function App1({ navigation }) {
   }
 
   function handleReposition({ data: draggableItems, from, to }) {
-    console.log("to", to);
     if (to > 0) {
       let preFrom = findItem(draggableItems, from, "back");
-      console.log("prefrom", preFrom);
       let postFrom = findItem(draggableItems, from, "front");
-      let preTo = findItem(draggableItems, to, "back");
+      let preDragged = findItem(draggableItems, to, "back");
       let postTo = findItem(draggableItems, to, "front");
+
+      let draggedItem = draggableItems[to];
+      draggedItem.time = preDragged.time + preDragged.duration;
+
       let preFromBad =
         preFrom === null
           ? false
@@ -306,13 +420,13 @@ function App1({ navigation }) {
           : postFrom.time <
             draggableItems[from].time + draggableItems[from].duration;
       let preToBad =
-        preTo === null
+        preDragged === null
           ? false
-          : preTo.time + preTo.duration > draggableItems[to].time;
+          : preDragged.time + preDragged.duration > draggedItem.time;
       let postToBad =
         to === draggableItems.length - 1
           ? false
-          : postTo.time < draggableItems[to].time + draggableItems[to].duration;
+          : postTo.time < draggedItem.time + draggedItem.duration;
 
       if (preFromBad || postFromBad || preToBad || postToBad) {
         // need reschedule
@@ -320,12 +434,18 @@ function App1({ navigation }) {
           ToastAndroid.show("Bad original, rescheduling...", 1500);
           fixFromIndex(draggableItems, to);
         } else if (preToBad || postToBad) {
-          ToastAndroid.show("Bad destination, rescheduling...", 1500);
-          fixFromIndex(draggableItems, to);
+          if (preToBad) {
+            ToastAndroid.show("Bad preto, rescheduling...", 1500);
+
+            fixFromIndex(draggableItems, to);
+          } else {
+            ToastAndroid.show("Bad posto, rescheduling...", 1500);
+
+            fixFromIndex(draggableItems, to + 1);
+          }
         }
       }
     } else {
-      console.log("p2", from, to, draggableItems[to]);
       if (to === 0) {
         // drag to top
         draggableItems[to].time = new Date().getTime();
@@ -395,9 +515,9 @@ function App1({ navigation }) {
   async function updateTODOs(newTODOs) {
     try {
       setTODOs(newTODOs);
+      // LayoutAnimation.configureNext(layoutAnimConfig);
       await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));
     } catch (error) {
-      console.log("Error:", error);
       // Error saving data
     }
   }
@@ -418,7 +538,6 @@ function App1({ navigation }) {
         break;
       }
     }
-    console.log("index", index);
     newTODO.time =
       index === 0
         ? new Date().getTime()
@@ -429,7 +548,6 @@ function App1({ navigation }) {
   }
 
   async function expandTODO(item) {
-    console.log("expand todo");
     let newTODOs = JSON.parse(JSON.stringify(TODOs));
     let newTODO = newTODOs.find((newTODO) => newTODO.key === item.key);
     newTODO.duration += 1000 * 60 * 60;
@@ -438,7 +556,6 @@ function App1({ navigation }) {
   }
 
   function handleItemPinch(nativeEvent, item) {
-    console.log("handle item pinch");
     if (nativeEvent.scale > 1) {
       expandTODO(item);
     }
@@ -469,9 +586,22 @@ function App1({ navigation }) {
     }
   }
 
-  const pinch = Gesture.Pinch().onStart(() => {
-    console.log("pinch 1 started");
-  });
+  function dragToNow() {
+    let newTODOs = JSON.parse(JSON.stringify(TODOs));
+
+    let now = new Date().getTime();
+    if (newTODOs[0] && newTODOs[0].time > now) {
+      ToastAndroid.show("Reschedule to now...", 1500);
+      let dragMillis = newTODOs[0].time - now;
+      newTODOs.map((newTODO, index) => {
+        newTODO.time = newTODO.time - dragMillis;
+      });
+    } else {
+      ToastAndroid.show("You have dued task", 1500);
+    }
+
+    updateTODOs(newTODOs);
+  }
 
   if (!isLoadingComplete) {
     return null;
@@ -489,33 +619,31 @@ function App1({ navigation }) {
                 ref={tapHandler}
                 simultaneousHandlers={[pinchHandler, draggableHandler]}
                 minPointers={2}
-                onEnded={() => console.log("double tap happen")}
+                onEnded={dragToNow}
               >
                 <View style={{ flex: 1 }}>
                   <StatusBar barStyle="dark-content" />
-                  <View style={{ display: "flex", flex: 1 }}>
-                    <HomeScreen
-                      navigation={navigation}
-                      modalVisible={modalVisible}
-                      setModalVisible={setModalVisible}
-                      newTODO={newTODO}
-                      setNewTODO={setNewTODO}
-                      addTODO={addTODO}
-                      TODOs={TODOs}
-                      pinchOutside={itemPinch}
-                    >
-                      <DraggableFlatList
-                        ref={draggableHandler}
-                        simultaneousHandlers={[tapHandler, pinchHandler]}
-                        data={draggableItems}
-                        onDragEnd={handleReposition}
-                        keyExtractor={(item) => item.key}
-                        renderItem={renderItem}
-                        itemExitingAnimation={FadeOut.duration(3000)}
-                        activationDistance={0}
-                      />
-                    </HomeScreen>
-                  </View>
+                  <HomeScreen
+                    navigation={navigation}
+                    modalVisible={modalVisible}
+                    setModalVisible={setModalVisible}
+                    newTODO={newTODO}
+                    setNewTODO={setNewTODO}
+                    addTODO={addTODO}
+                    TODOs={TODOs}
+                    pinchOutside={itemPinch}
+                  >
+                    <DraggableFlatList
+                      ref={draggableHandler}
+                      simultaneousHandlers={[tapHandler, pinchHandler]}
+                      data={draggableItems}
+                      onDragEnd={handleReposition}
+                      keyExtractor={(item) => item.key}
+                      renderItem={renderItem}
+                      itemExitingAnimation={FadeOut.duration(3000)}
+                      activationDistance={0}
+                    />
+                  </HomeScreen>
                 </View>
               </TapGestureHandler>
             </PinchGestureHandler>
@@ -526,7 +654,7 @@ function App1({ navigation }) {
   }
 }
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 function App() {
   return (

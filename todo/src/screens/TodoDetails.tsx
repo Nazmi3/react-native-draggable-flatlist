@@ -1,49 +1,158 @@
-import React, { useState, useEffect, useRef, useImperativeHandle } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
   Text,
   Slider,
-  TextInput,
-  ToastAndroid,
+  Image,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DraggableFlatList from "react-native-draggable-flatlist";
 
-import SwipeableButton, {
-  getStringDuration,
-} from "../../components/SwipeableButton";
-import { PinchGestureHandler } from "react-native-gesture-handler";
+import { getStringDuration } from "../../components/SwipeableButton";
+import { HStack, VStack } from "@react-native-material/core";
 import { SharedElement } from "react-navigation-shared-element";
-// import Slider from "@react-native-community/slider";
+import moment from "moment/moment";
+import DatePicker from "react-native-date-picker";
 
-const Details = ({
-  navigation,
-  route: {
-    params: { todo },
-  },
-}) => {
+export const REPEAT = ["freeTime", "day", "weekDay", "month", "solatTime"];
+
+export function resortTodo(todos, todo) {
+  todos.sort(function (a, b) {
+    return a.time - b.time;
+  });
+  console.log("resort todo", todos);
+}
+
+export async function updateTODO(key, field, value) {
+  let todosJSON = await AsyncStorage.getItem("TODOs");
+  let todos = JSON.parse(todosJSON);
+  let todo = todos.find((todo) => todo.key === key);
+
+  todo[field] = value;
+  console.log("field", field);
+
+  if (field === "time") {
+    resortTodo(todos, todo);
+  }
+
+  await AsyncStorage.setItem("TODOs", JSON.stringify(todos));
+}
+
+let count = 0;
+const Details = ({ navigation, route: { params } }) => {
+  const [todo, setTodo] = useState(params.todo);
+  const [duration, setDuration] = useState(params.todo.duration);
+  const [date, setDate] = useState(new Date(params.todo.time));
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    console.log("todo", todo);
+  }, [todo]);
+
+  function setDBDuration(duration) {
+    count += 1;
+    updateTODO(todo.key, "duration", duration);
+  }
+
+  function getStringDate(unix) {
+    return moment(unix).format("DD/MM/YYYY");
+  }
+
+  function nextRepeatType(type) {
+    let currentIndex = REPEAT.findIndex((key) => key === type);
+    let isLastIndex = currentIndex === REPEAT.length - 1;
+    let nextIndex = isLastIndex ? 0 : currentIndex + 1;
+    return REPEAT[nextIndex];
+  }
   return (
     <>
       <SharedElement id={todo.time}>
-        <View style={{ padding: 20 }}>
-          <Text>{getStringDuration(todo.duration)}</Text>
+        <VStack p={20} spacing={10}>
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text>{getStringDuration(duration)}</Text>
+          </View>
           <Slider
-            style={{ width: 200, height: 40 }}
-            minimumValue={0}
-            maximumValue={1}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#000000"
+            style={{ height: 40 }}
+            minimumValue={1000 * 60 * 15}
+            maximumValue={1000 * 60 * 60 * 10}
+            step={1000 * 60 * 15}
+            value={duration}
+            onValueChange={(value) => setDuration(value)}
+            onSlidingComplete={setDBDuration}
+            minimumTrackTintColor="#000000"
+            maximumTrackTintColor="#FFFFFF"
           />
-          <Text>
-            {todo.repeat
-              ? `Every ${todo.repeat.every}${
-                  todo.repeat.date ? " at " + todo.repeat.date + "th" : ""
-                }`
-              : ""}
-          </Text>
-        </View>
+
+          {todo.repeat && (
+            <HStack>
+              <TouchableOpacity
+                onPress={() => {
+                  setTodo({
+                    ...todo,
+                    repeat: false,
+                  });
+                  updateTODO(todo.key, "repeat", false);
+                }}
+              >
+                <Text>{`Every`}</Text>
+              </TouchableOpacity>
+              <Text>{` `}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setTodo({
+                    ...todo,
+                    repeat: { every: nextRepeatType(todo.repeat.every) },
+                  });
+                  updateTODO(todo.key, "repeat", {
+                    every: nextRepeatType(todo.repeat.every),
+                  });
+                }}
+              >
+                <Text>
+                  {`${todo.repeat.every}${
+                    todo.repeat.date ? " at " + todo.repeat.date + "th" : ""
+                  }`}
+                </Text>
+              </TouchableOpacity>
+            </HStack>
+          )}
+          {!todo.repeat && (
+            <TouchableOpacity
+              onPress={() => {
+                setTodo({ ...todo, repeat: { every: "freeTime" } });
+                updateTODO(todo.key, "repeat", { every: "freeTime" });
+              }}
+            >
+              <Text>Once</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity onPress={() => setOpen(true)}>
+            <Text>{getStringDate(date.getTime())}</Text>
+          </TouchableOpacity>
+        </VStack>
       </SharedElement>
+      <DatePicker
+        modal
+        open={open}
+        date={date}
+        mode="date"
+        onConfirm={(date) => {
+          setOpen(false);
+          console.log("date confirmed", date, date.getTime());
+          setDate(date);
+          updateTODO(todo.key, "time", date.getTime());
+        }}
+        onCancel={() => {
+          setOpen(false);
+        }}
+      />
     </>
   );
 };

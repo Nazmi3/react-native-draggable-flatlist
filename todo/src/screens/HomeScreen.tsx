@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useImperativeHandle } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  useCallback,
+} from "react";
 import {
   StyleSheet,
   Modal,
@@ -15,6 +21,7 @@ import DraggableFlatList from "react-native-draggable-flatlist";
 import { Item, getColor } from "../utils";
 import SwipeableButton from "../../components/SwipeableButton";
 import { PinchGestureHandler, State } from "react-native-gesture-handler";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default React.forwardRef(
   (
@@ -33,12 +40,6 @@ export default React.forwardRef(
   ) => {
     // return (<View></View>)
     const nameInputRef = useRef();
-
-    // useImperativeHandle(ref, () => ({
-    //   dragToNow() {
-    //     dragToNow();
-    //   },
-    // }));
 
     function dragToNow() {
       ToastAndroid.show("Dragging up timeline...", 1500);
@@ -59,7 +60,7 @@ export default React.forwardRef(
     }, [modalVisible]);
 
     return (
-      <>
+      <View style={{ display: "flex", flex: 1 }}>
         <View style={{ padding: 10 }}>{children}</View>
 
         <Modal
@@ -116,21 +117,7 @@ export default React.forwardRef(
             </View>
           </View>
         </Modal>
-      </>
+      </View>
     );
   }
 );
-
-const styles = StyleSheet.create({
-  rowItem: {
-    height: 100,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-});

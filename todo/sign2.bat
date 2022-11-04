@@ -1,0 +1,1 @@
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore todo.keystore G:\Apps\react-native-draggable-flatlist\todo\android\app\build\outputs\bundle\release\app-release.aab nazmi
