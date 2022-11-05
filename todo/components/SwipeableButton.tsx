@@ -117,7 +117,6 @@ const SwipeableButton = ({
             styles.rowItem,
             {
               borderRadius: 10,
-              borderColor: isActive ? "red" : getBackgroundColor(item),
               padding: 10,
               elevation: 1,
             },
@@ -163,9 +162,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "white",
-    borderWidth: 1,
-    marginTop: 2,
-    marginBottom: 2,
     shadowColor: "#171717",
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
@@ -201,7 +197,7 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   text: {
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   underlayRight: {
     flex: 1,

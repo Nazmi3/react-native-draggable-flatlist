@@ -14,6 +14,8 @@ import {
   TextInput,
   ToastAndroid,
   FlatList,
+  ImageBackground,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DraggableFlatList from "react-native-draggable-flatlist";
@@ -57,7 +59,7 @@ const HomeScreen = (
   }, [modalVisible]);
 
   return (
-    <View style={{ display: "flex", flex: 1, backgroundColor: "white" }}>
+    <View style={{ display: "flex", flex: 1 }}>
       <View style={{ padding: 10 }}>{children}</View>
 
       <Modal

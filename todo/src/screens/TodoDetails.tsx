@@ -4,7 +4,7 @@ import {
   View,
   Text,
   Slider,
-  Image,
+  ImageBackground,
   TouchableOpacity,
 } from "react-native";
 
@@ -68,14 +68,10 @@ const Details = ({ navigation, route: { params } }) => {
   }
   return (
     <SharedElement id={todo.text}>
-      <View
-        style={{
-          backgroundColor: "white",
-        }}
-      >
+      <View style={{ backgroundColor: "white", borderRadius: 10 }}>
         <Text
           style={{
-            fontWeight: "bold",
+            fontWeight: "500",
             fontSize: 20,
             textAlign: "center",
             padding: 10,
