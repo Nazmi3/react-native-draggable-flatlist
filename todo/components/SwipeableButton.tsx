@@ -100,8 +100,8 @@ const SwipeableButton = ({
       ref={(ref) => (row[item.key] = ref)}
       leftThreshold={200}
     >
-      <View style={{ opacity: item.passed ? 0.45 : 1 }}>
-        <SharedElement id={`${item.text}_box`}>
+      <SharedElement id={`${item.text}_box`}>
+        <View style={{ opacity: item.passed ? 0.45 : 1 }}>
           <TouchableOpacity
             activeOpacity={0.9}
             onLongPress={drag}
@@ -151,7 +151,7 @@ const SwipeableButton = ({
                 }}
               >
                 {item.time
-                  ? moment(item.time).format("YYYY-MM-DD hh:mm a")
+                  ? moment(item.time).format("DD/MM/YYYY hh:mm a")
                   : undefined}
               </Text>
               <Text
@@ -163,8 +163,8 @@ const SwipeableButton = ({
               </Text>
             </View>
           </TouchableOpacity>
-        </SharedElement>
-      </View>
+        </View>
+      </SharedElement>
     </Swipeable>
   );
 };
