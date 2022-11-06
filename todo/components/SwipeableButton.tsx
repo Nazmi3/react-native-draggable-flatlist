@@ -103,7 +103,7 @@ const SwipeableButton = ({
       <View style={{ opacity: item.passed ? 0.45 : 1 }}>
         <SharedElement id={`${item.text}_box`}>
           <TouchableOpacity
-            activeOpacity={1}
+            activeOpacity={0.9}
             onLongPress={drag}
             onPress={() => {
               console.log("button clicked");

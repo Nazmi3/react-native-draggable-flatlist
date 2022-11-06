@@ -57,7 +57,13 @@ const Details = ({ navigation, route: { params } }) => {
   }
   return (
     <SharedElement id={`${todo.text}_box`}>
-      <View style={{ backgroundColor: "white", borderRadius: 10 }}>
+      <View
+        style={{
+          backgroundColor: "white",
+          borderBottomLeftRadius: 10,
+          borderBottomRightRadius: 10,
+        }}
+      >
         <View
           style={{
             display: "flex",
