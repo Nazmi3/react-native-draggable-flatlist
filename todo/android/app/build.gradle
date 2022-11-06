@@ -1,4 +1,7 @@
-apply plugin: "com.android.application"
+plugins {
+    id 'com.android.application'
+    id 'com.github.triplet.play' version '2.1.0'
+}
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -235,17 +238,21 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file("todo.keystore")
+            storePassword "khairina3"
+            keyAlias "nazmi"
+            keyPassword "khairina3"        
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -265,6 +272,17 @@ android {
     }
 }
 
+play {    
+    track = "production"    
+    // userFraction = 1    
+    serviceAccountEmail = "sa-1-533@pc-api-6929261673980017948-543.iam.gserviceaccount.com"    
+    serviceAccountCredentials = file("play.p12")
+    // resolutionStrategy = "auto"    
+    // outputProcessor {
+    //      // this: ApkVariantOutput        
+    //      // versionNameOverride = "$versionNameOverride.$versionCode"    
+    //     }
+    }
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
 // Accepts values in comma delimited lists, example:
 // android.packagingOptions.pickFirsts=/LICENSE,**/picasa.ini

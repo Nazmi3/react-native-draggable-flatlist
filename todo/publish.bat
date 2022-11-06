@@ -6,7 +6,7 @@ for /F "tokens=1-4 delims=:.," %%a in ("%time%") do (
 
 start publish_start.m4a
 cd android
-call ./gradlew publish
+call ./gradlew assembleRelease
 cd ..
 echo "Publish Complete"
 start publish_complete.m4a
