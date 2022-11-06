@@ -177,7 +177,7 @@ Details.sharedElements = (navigation) => {
   let todo = navigation.params.todo;
   console.log("navigation", todo.time);
   return [
-    { id: `${todo.text}_box`, animation: "fade-in", resize: "stretch" },
+    { id: `${todo.text}_box`, animation: "fade-in" },
     { id: todo.text, animation: "fade-in" },
   ];
 };
