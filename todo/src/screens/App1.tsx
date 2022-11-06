@@ -17,7 +17,7 @@ import TodoDetails from "./TodoDetails";
 import { useImperativeHandle, Children } from "react";
 import { StyleSheet, ToastAndroid, StatusBar } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
-import { Item, getColor } from "../../src/utils";
+import { Item, getColor, getDraggableItems } from "../../src/utils";
 import SwipeableButton from "../../components/SwipeableButton";
 import Animated from "react-native-reanimated";
 import { FadeOut } from "react-native-reanimated";
@@ -165,38 +165,6 @@ export default function App1({ navigation }) {
     updateTODOs(newTODOs);
   }
 
-  function getDraggableItems(newTODOs) {
-    let newDraggableItems = [];
-    let lastTODODay = null;
-    newTODOs.map((newTODO, index) => {
-      let beginOfDay = new Date(newTODO.time).getDay() !== lastTODODay;
-
-      let date = new Date(newTODO.time);
-      let isSameDate =
-        date.toLocaleDateString() === new Date().toLocaleDateString();
-      let happenToday = isSameDate;
-      if (beginOfDay) {
-        let label = new Date(newTODO.time).toDateString();
-        if (date.getDate() === new Date().getDate() + 1) label = "Tomorrow";
-        else if (happenToday) {
-          label = "Today";
-        }
-        if (!(index === 0 && happenToday))
-          newDraggableItems.push({
-            id: label,
-            isLabel: true,
-            label: label,
-          });
-      }
-
-      newDraggableItems.push(
-        JSON.parse(JSON.stringify({ ...newTODO, id: newTODO.id }))
-      );
-      lastTODODay = new Date(newTODO.time).getDay();
-    });
-    return newDraggableItems;
-  }
-
   function getTodosFromDraggable(draggableItems) {
     draggableItems.map((draggableItem, index) => {
       if (draggableItem.isLabel === true) {
@@ -228,7 +196,6 @@ export default function App1({ navigation }) {
         };
         await storage.set("athanTimes", athanData);
       } else {
-        console.log("use db athan data");
       }
 
       let timeDay0 = athanData.data[0];
@@ -314,7 +281,6 @@ export default function App1({ navigation }) {
           throw "cannot generate next pray time";
       }
 
-      console.log("next subuh time", nextPrayTime);
       return nextPrayTime;
     } catch (error) {
       console.log("error retrieve", error);

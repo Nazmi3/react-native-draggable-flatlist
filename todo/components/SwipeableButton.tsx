@@ -116,7 +116,11 @@ const SwipeableButton = ({
           style={[
             styles.rowItem,
             {
-              borderRadius: 10,
+              opacity: item.passed ? 0.45 : 1,
+              borderTopLeftRadius: item.topOfDay ? 10 : 0,
+              borderTopRightRadius: item.topOfDay ? 10 : 0,
+              borderBottomLeftRadius: item.bottomOfDay ? 10 : 0,
+              borderBottomRightRadius: item.bottomOfDay ? 10 : 0,
               padding: 10,
               elevation: 1,
             },
