@@ -40,10 +40,6 @@ const Details = ({ navigation, route: { params } }) => {
   const [date, setDate] = useState(new Date(params.todo.time));
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    console.log("todo", todo);
-  }, [todo]);
-
   function setDBDuration(duration) {
     count += 1;
     updateTODO(todo.key, "duration", duration);
@@ -62,16 +58,24 @@ const Details = ({ navigation, route: { params } }) => {
   return (
     <SharedElement id={todo.text}>
       <View style={{ backgroundColor: "white", borderRadius: 10 }}>
-        <Text
+        <View
           style={{
-            fontWeight: "500",
-            fontSize: 20,
-            textAlign: "center",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             padding: 10,
           }}
         >
-          {todo.text}
-        </Text>
+          <Text
+            style={{
+              fontWeight: "500",
+              fontSize: 20,
+              textAlign: "center",
+            }}
+          >
+            {todo.text}
+          </Text>
+        </View>
         <VStack p={20} spacing={10}>
           <View
             style={{

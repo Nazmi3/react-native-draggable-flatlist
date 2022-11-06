@@ -6,7 +6,6 @@ import {
   View,
   Pressable,
 } from "react-native";
-import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import DraggableFlatList, {
   ScaleDecorator,
   RenderItemParams,
@@ -89,75 +88,82 @@ const SwipeableButton = ({
   };
 
   return (
-    <SharedElement id={item.text}>
-      <Swipeable
-        renderLeftActions={(progress, dragX) =>
-          renderRightActions(progress, dragX, () => console.log("on click"))
-        }
-        onSwipeableWillOpen={() => {
-          console.log("on swipeable will open", item);
-          deleteTODO(item);
-          closeRow();
-        }}
-        ref={(ref) => (row[item.key] = ref)}
-        leftThreshold={200}
-      >
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onLongPress={drag}
-          onPress={() => {
-            console.log("button clicked");
-            navigation.navigate("Details", {
-              todo: item,
-            });
-          }}
-          delayLongPress={200}
-          disabled={isActive}
-          style={[
-            styles.rowItem,
-            {
-              opacity: item.passed ? 0.45 : 1,
-              borderTopLeftRadius: item.topOfDay ? 10 : 0,
-              borderTopRightRadius: item.topOfDay ? 10 : 0,
-              borderBottomLeftRadius: item.bottomOfDay ? 10 : 0,
-              borderBottomRightRadius: item.bottomOfDay ? 10 : 0,
-              padding: 10,
-              elevation: 1,
-            },
-          ]}
-        >
-          <View>
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontSize: (rate / (index + rate)) * 30,
+    <Swipeable
+      renderLeftActions={(progress, dragX) =>
+        renderRightActions(progress, dragX, () => console.log("on click"))
+      }
+      onSwipeableWillOpen={() => {
+        console.log("on swipeable will open", item);
+        deleteTODO(item);
+        closeRow();
+      }}
+      ref={(ref) => (row[item.key] = ref)}
+      leftThreshold={200}
+    >
+      <SharedElement id={item.text}>
+        <View style={{ opacity: item.passed ? 0.45 : 1 }}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onLongPress={drag}
+            onPress={() => {
+              console.log("button clicked");
+              navigation.navigate("Details", {
+                todo: item,
+              });
+            }}
+            delayLongPress={200}
+            disabled={isActive}
+            style={[
+              styles.rowItem,
+              {
+                borderTopLeftRadius: item.topOfDay ? 10 : 0,
+                borderTopRightRadius: item.topOfDay ? 10 : 0,
+                borderBottomLeftRadius: item.bottomOfDay ? 10 : 0,
+                borderBottomRightRadius: item.bottomOfDay ? 10 : 0,
+                padding: 10,
+              },
+            ]}
+          >
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    fontSize: (rate / (index + rate)) * 30,
+                    textAlign: "center",
+                  },
+                ]}
+              >
+                {item.text}
+              </Text>
+
+              <Text
+                style={{
                   textAlign: "center",
-                },
-              ]}
-            >
-              {item.text}
-            </Text>
-            <Text
-              style={{
-                textAlign: "center",
-              }}
-            >
-              {item.time
-                ? moment(item.time).format("YYYY-MM-DD hh:mm a")
-                : undefined}
-            </Text>
-            <Text
-              style={{
-                textAlign: "center",
-              }}
-            >
-              {getStringDuration(item.duration)}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </Swipeable>
-    </SharedElement>
+                }}
+              >
+                {item.time
+                  ? moment(item.time).format("YYYY-MM-DD hh:mm a")
+                  : undefined}
+              </Text>
+              <Text
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                {getStringDuration(item.duration)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </SharedElement>
+    </Swipeable>
   );
 };
 

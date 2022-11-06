@@ -75,10 +75,6 @@ export default function App1({ navigation }) {
   );
 
   useEffect(() => {
-    console.log("uid", uuid());
-  }, [draggableItems]);
-
-  useEffect(() => {
     setDraggableItems(getDraggableItems(TODOs));
     LayoutAnimation.configureNext(layoutAnimConfig);
   }, [TODOs]);
