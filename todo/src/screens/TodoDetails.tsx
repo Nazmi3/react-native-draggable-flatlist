@@ -56,7 +56,7 @@ const Details = ({ navigation, route: { params } }) => {
     return REPEAT[nextIndex];
   }
   return (
-    <SharedElement id={todo.text}>
+    <SharedElement id={`${todo.text}_box`}>
       <View style={{ backgroundColor: "white", borderRadius: 10 }}>
         <View
           style={{
@@ -66,15 +66,17 @@ const Details = ({ navigation, route: { params } }) => {
             padding: 10,
           }}
         >
-          <Text
-            style={{
-              fontWeight: "500",
-              fontSize: 20,
-              textAlign: "center",
-            }}
-          >
-            {todo.text}
-          </Text>
+          <SharedElement id={todo.text}>
+            <Text
+              style={{
+                fontWeight: "500",
+                fontSize: 20,
+                textAlign: "center",
+              }}
+            >
+              {todo.text}
+            </Text>
+          </SharedElement>
         </View>
         <VStack p={20} spacing={10}>
           <View
@@ -168,7 +170,10 @@ const Details = ({ navigation, route: { params } }) => {
 Details.sharedElements = (navigation) => {
   let todo = navigation.params.todo;
   console.log("navigation", todo.time);
-  return [{ id: todo.text, animation: "fade" }];
+  return [
+    { id: `${todo.text}_box`, animation: "fade" },
+    { id: todo.text, animation: "fade" },
+  ];
 };
 
 export default Details;

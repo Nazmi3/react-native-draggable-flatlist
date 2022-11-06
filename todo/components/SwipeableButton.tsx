@@ -100,10 +100,10 @@ const SwipeableButton = ({
       ref={(ref) => (row[item.key] = ref)}
       leftThreshold={200}
     >
-      <SharedElement id={item.text}>
-        <View style={{ opacity: item.passed ? 0.45 : 1 }}>
+      <View style={{ opacity: item.passed ? 0.45 : 1 }}>
+        <SharedElement id={`${item.text}_box`}>
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={1}
             onLongPress={drag}
             onPress={() => {
               console.log("button clicked");
@@ -131,17 +131,19 @@ const SwipeableButton = ({
                 alignItems: "center",
               }}
             >
-              <Text
-                style={[
-                  styles.text,
-                  {
-                    fontSize: (rate / (index + rate)) * 30,
-                    textAlign: "center",
-                  },
-                ]}
-              >
-                {item.text}
-              </Text>
+              <SharedElement id={item.text}>
+                <Text
+                  style={[
+                    styles.text,
+                    {
+                      fontSize: (rate / (index + rate)) * 30,
+                      textAlign: "center",
+                    },
+                  ]}
+                >
+                  {item.text}
+                </Text>
+              </SharedElement>
 
               <Text
                 style={{
@@ -161,8 +163,8 @@ const SwipeableButton = ({
               </Text>
             </View>
           </TouchableOpacity>
-        </View>
-      </SharedElement>
+        </SharedElement>
+      </View>
     </Swipeable>
   );
 };
