@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from "react";
 import {
-  StyleSheet,
   Modal,
   View,
   Text,
@@ -63,7 +62,7 @@ const HomeScreen = (
       <View style={{ padding: 10 }}>{children}</View>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
@@ -82,12 +81,10 @@ const HomeScreen = (
               backgroundColor: "white",
               borderRadius: 10,
               padding: 10,
-              borderWidth: 1,
-              borderColor: getColor((1000 * 60 * 30) / (1000 * 60 * 90), 9),
             }}
           >
             <TextInput
-              style={{ fontSize: 20 }}
+              style={{ fontSize: 20, minWidth: 100 }}
               ref={(ref) => {
                 nameInputRef.current = ref;
               }}

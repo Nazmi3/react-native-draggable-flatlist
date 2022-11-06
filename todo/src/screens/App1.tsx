@@ -326,6 +326,7 @@ export default function App1({ navigation }) {
   }
 
   function handleReposition({ data: draggableItems, from, to }) {
+    if (from === to) return;
     if (to > 0) {
       let preFrom = findItem(draggableItems, from, "back");
       let postFrom = findItem(draggableItems, from, "front");

@@ -100,7 +100,7 @@ const SwipeableButton = ({
           closeRow();
         }}
         ref={(ref) => (row[item.key] = ref)}
-        leftOpenValue={-100}
+        leftThreshold={200}
       >
         <TouchableOpacity
           activeOpacity={0.8}
