@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'com.github.triplet.play' version '2.1.0'
+    id 'com.github.triplet.play' version "3.7.0"
 }
 
 import com.android.build.OutputFile
@@ -147,8 +147,8 @@ android {
         applicationId 'com.nazmi3.todo'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 4
+        versionName "1.0.2"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -273,10 +273,10 @@ android {
 }
 
 play {    
-    track = "production"    
+    track = "beta"  
+    serviceAccountCredentials.set(file("play.json"))  
+    // serviceAccountEmail = "sa-1-533@pc-api-6929261673980017948-543.iam.gserviceaccount.com"        
     // userFraction = 1    
-    serviceAccountEmail = "sa-1-533@pc-api-6929261673980017948-543.iam.gserviceaccount.com"    
-    serviceAccountCredentials = file("play.p12")
     // resolutionStrategy = "auto"    
     // outputProcessor {
     //      // this: ApkVariantOutput        

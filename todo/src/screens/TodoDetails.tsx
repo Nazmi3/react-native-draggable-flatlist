@@ -38,7 +38,7 @@ const Details = ({ navigation, route: { params } }) => {
   const [todo, setTodo] = useState(params.todo);
   const [duration, setDuration] = useState(params.todo.duration);
   const [date, setDate] = useState(new Date(params.todo.time));
-  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<string | null>(null);
 
   function setDBDuration(duration) {
     count += 1;
@@ -47,6 +47,10 @@ const Details = ({ navigation, route: { params } }) => {
 
   function getStringDate(unix) {
     return moment(unix).format("DD/MM/YYYY");
+  }
+
+  function getStringTime(unix) {
+    return moment(unix).format("hh:mm a");
   }
 
   function nextRepeatType(type) {
@@ -149,20 +153,25 @@ const Details = ({ navigation, route: { params } }) => {
               <Text>Once</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity onPress={() => setOpen(true)}>
-            <Text>{getStringDate(date.getTime())}</Text>
-          </TouchableOpacity>
+          <HStack>
+            <TouchableOpacity onPress={() => setMode("date")}>
+              <Text>{getStringDate(date.getTime())}</Text>
+            </TouchableOpacity>
+            <Text>{` `}</Text>
+            <TouchableOpacity onPress={() => setMode("time")}>
+              <Text>{getStringTime(date.getTime())}</Text>
+            </TouchableOpacity>
+          </HStack>
         </VStack>
-        {open && (
+        {mode && (
           <DateTimePicker
             testID="dateTimePicker"
             value={date}
-            mode="date"
+            mode={mode}
             is24Hour={true}
             display="default"
             onChange={(event, date: any) => {
-              setOpen(false);
-              console.log("date confirmed", date, date.getTime());
+              setMode(null);
               setDate(date);
               updateTODO(todo.key, "time", date.getTime());
             }}
