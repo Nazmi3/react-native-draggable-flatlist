@@ -3,3 +3,5 @@ node_modules/**/*
 coverage/
 .idea
 todo/yarn.lock
+secret_play.json
+yarn-error.log
