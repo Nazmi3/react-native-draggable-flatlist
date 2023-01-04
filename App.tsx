@@ -1,16 +1,8 @@
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { View, Text, LayoutAnimation } from "react-native";
-import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
-import HomeScreen from "./src/screens/HomeScreen";
 import "react-native-gesture-handler";
-import {
-  GestureHandlerRootView,
-  PinchGestureHandler,
-  State,
-  TapGestureHandler,
-} from "react-native-gesture-handler";
+
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import TodoDetails from "./src/screens/TodoDetails";
@@ -30,13 +22,13 @@ import {
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import moment from "moment";
-
-import { v4 as uuid } from "uuid";
-import App1 from "./src/screens/App1";
+import Home from "./src/screens/Home";
+import Commitment from "./src/screens/Commitment";
 import { Provider } from "react-redux";
 import store from "./src/store";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { IconComponentProvider, Icon } from "@react-native-material/core";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const Tab = createBottomTabNavigator();
 
@@ -101,22 +93,36 @@ const navTheme = {
 
 function App() {
   return (
-    <Provider store={store}>
-      <ImageBackground
-        style={{ flex: 1 }}
-        source={require("./assets/images/background.jpg")}
-      >
-        <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
-          <SafeAreaProvider style={{ backgroundColor: "transparent" }}>
-            <NavigationContainer theme={navTheme}>
+    <ImageBackground
+      style={{ flex: 1 }}
+      source={require("./assets/images/background.jpg")}
+    >
+      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+        <SafeAreaProvider style={{ backgroundColor: "transparent" }}>
+          <NavigationContainer theme={navTheme}>
+            <Tab.Navigator>
+              <Tab.Screen
+                name="Todo"
+                component={Home}
+                options={{
+                  tabBarIcon: ({ color, size }) => (
+                    <Icon name="list" size={24} color={color} />
+                  ),
+                }}
+              />
+              <Tab.Screen
+                name="Commitment"
+                component={Commitment}
+                options={{
+                  tabBarIcon: ({ color, size }) => (
+                    <Icon name="shopping-cart" size={24} color={color} />
+                  ),
+                }}
+              />
+            </Tab.Navigator>
+          </NavigationContainer>
 
-              <Tab.Navigator>
-                <Tab.Screen name="Home" component={App1} />
-                <Tab.Screen name="Details" component={TodoDetails} />
-              </Tab.Navigator>
-            </NavigationContainer>
-
-            {/* <Stack.Navigator style={{ backgroundColor: "transparent" }}>
+          {/* <Stack.Navigator style={{ backgroundColor: "transparent" }}>
                 <Stack.Screen
                   style={{ backgroundColor: "transparent" }}
                   name="Home"
@@ -132,10 +138,9 @@ function App() {
                   })}
                 />
               </Stack.Navigator> */}
-          </SafeAreaProvider>
-        </SafeAreaView>
-      </ImageBackground>
-    </Provider>
+        </SafeAreaProvider>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
 
@@ -193,4 +198,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default () => (
+  <Provider store={store}>
+    <IconComponentProvider IconComponent={Entypo}>
+      <App />
+    </IconComponentProvider>
+  </Provider>
+);
