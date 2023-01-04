@@ -1,6 +1,7 @@
 export function getDraggableItems(newTODOs) {
   let newDraggableItems = [];
   let lastTODODay = null;
+  console.log("t1", newTODOs)
   newTODOs.map((newTODO, index) => {
     let dayPosition = "middle";
     let currentDay = new Date(newTODO.time).getDay();

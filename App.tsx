@@ -31,12 +31,14 @@ import {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
-import {
-  createSharedElementStackNavigator,
-  SharedElement,
-} from "react-navigation-shared-element";
+
 import { v4 as uuid } from "uuid";
 import App1 from "./src/screens/App1";
+import { Provider } from "react-redux";
+import store from "./src/store";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const Tab = createBottomTabNavigator();
 
 let storage = {
   async set(key: string, value: any) {
@@ -87,7 +89,7 @@ function Row(props) {
   );
 }
 
-const Stack = createSharedElementStackNavigator();
+// const Stack = createSharedElementStackNavigator();
 
 const navTheme = {
   ...DefaultTheme,
@@ -99,33 +101,41 @@ const navTheme = {
 
 function App() {
   return (
-    <ImageBackground
-      style={{ flex: 1 }}
-      source={require("./assets/images/background.jpg")}
-    >
-      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
-        <SafeAreaProvider style={{ backgroundColor: "transparent" }}>
-          <NavigationContainer theme={navTheme}>
-            <Stack.Navigator style={{ backgroundColor: "transparent" }}>
-              <Stack.Screen
-                style={{ backgroundColor: "transparent" }}
-                name="Home"
-                component={App1}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Details"
-                component={TodoDetails}
-                options={({ route }) => ({
-                  title: route.params.todo.text,
-                  headerShown: false,
-                })}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SafeAreaProvider>
-      </SafeAreaView>
-    </ImageBackground>
+    <Provider store={store}>
+      <ImageBackground
+        style={{ flex: 1 }}
+        source={require("./assets/images/background.jpg")}
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+          <SafeAreaProvider style={{ backgroundColor: "transparent" }}>
+            <NavigationContainer theme={navTheme}>
+
+              <Tab.Navigator>
+                <Tab.Screen name="Home" component={App1} />
+                <Tab.Screen name="Details" component={TodoDetails} />
+              </Tab.Navigator>
+            </NavigationContainer>
+
+            {/* <Stack.Navigator style={{ backgroundColor: "transparent" }}>
+                <Stack.Screen
+                  style={{ backgroundColor: "transparent" }}
+                  name="Home"
+                  component={App1}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Details"
+                  component={TodoDetails}
+                  options={({ route }) => ({
+                    title: route.params.todo.text,
+                    headerShown: false,
+                  })}
+                />
+              </Stack.Navigator> */}
+          </SafeAreaProvider>
+        </SafeAreaView>
+      </ImageBackground>
+    </Provider>
   );
 }
 

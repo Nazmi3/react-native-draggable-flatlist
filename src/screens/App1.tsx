@@ -17,7 +17,7 @@ import TodoDetails from "./TodoDetails";
 import { useImperativeHandle, Children } from "react";
 import { StyleSheet, ToastAndroid, StatusBar } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
-import { Item, getColor, getDraggableItems } from "../../src/utils";
+import { Item, getColor, getDraggableItems } from "../utils/index";
 import SwipeableButton from "../../components/SwipeableButton";
 import Animated from "react-native-reanimated";
 import { FadeOut } from "react-native-reanimated";
@@ -31,11 +31,8 @@ import {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
-import {
-  createSharedElementStackNavigator,
-  SharedElement,
-} from "react-navigation-shared-element";
 import { v4 as uuid } from "uuid";
+import { useSelector } from 'react-redux'
 
 export default function App1({ navigation }) {
   const defaultTODO = {
@@ -53,7 +50,8 @@ export default function App1({ navigation }) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [newTODO, setNewTODO] = useState(defaultTODO);
-  const [TODOs, setTODOs] = useState([]);
+  // const [TODOs, setTODOs] = useState([]);
+  const TODOs = useSelector(state => state.todos)
   const [draggableItems, setDraggableItems] = useState([]);
   const layoutAnimConfig = {
     duration: 300,
@@ -75,6 +73,7 @@ export default function App1({ navigation }) {
   );
 
   useEffect(() => {
+    console.log("t6", TODOs)
     setDraggableItems(getDraggableItems(TODOs));
     LayoutAnimation.configureNext(layoutAnimConfig);
   }, [TODOs]);
@@ -178,8 +177,8 @@ export default function App1({ navigation }) {
       if (!athanData) {
         let resp = await axios.get(
           "http://api.aladhan.com/v1/calendar?latitude=3.080601&longitude=101.589644&month=" +
-            month +
-            "&year=2022&annual=false&school=0&timezonestring=Asia/Kuala_Lumpur",
+          month +
+          "&year=2022&annual=false&school=0&timezonestring=Asia/Kuala_Lumpur",
           {
             // params: {
             // articleID: articleID
@@ -287,7 +286,7 @@ export default function App1({ navigation }) {
   async function retrieveTODOs() {
     try {
       let todosJSON = await AsyncStorage.getItem("TODOs");
-      let newTODOs = JSON.parse(todosJSON);
+      let newTODOs = todosJSON !== "null" ? JSON.parse(todosJSON) : [];
 
       // migrate existing todos
       newTODOs.map((newTODO, index) => {
@@ -298,10 +297,10 @@ export default function App1({ navigation }) {
           newTODOs.splice(index, 1);
         }
       });
+      console.log("new todo", newTODOs)
       await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));
-
       setTODOs(newTODOs ?? []);
-    } catch (error) {}
+    } catch (error) { }
   }
 
   function handlePinchStart({ nativeEvent: currentGesture }) {
@@ -340,7 +339,7 @@ export default function App1({ navigation }) {
         from === draggableItems.length - 1
           ? false
           : postFrom.time <
-            draggableItems[from].time + draggableItems[from].duration;
+          draggableItems[from].time + draggableItems[from].duration;
       let preToBad =
         preDragged === null
           ? false
@@ -436,6 +435,8 @@ export default function App1({ navigation }) {
 
   async function updateTODOs(newTODOs) {
     try {
+      console.log("new todo2", newTODOs)
+
       setTODOs(newTODOs);
       // LayoutAnimation.configureNext(layoutAnimConfig);
       await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));

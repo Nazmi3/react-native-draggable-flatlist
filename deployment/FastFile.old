@@ -1,0 +1,15 @@
+before_all do
+    ensure_git_branch
+    ensure_git_status_clean
+    git_pull
+end
+
+platform :android do
+    desc "Android build and release to beta"
+    lane :beta do
+        increment_version_code(app_project_dir:"./android/app")
+        gradle(task:"clean", project_dir:"./android/")
+        gradle(task:"bundle", build_type:"Release", project_dir:"./android")
+        supply(track:"beta", aab:"./android/app/build/outputs/bundle/release/app-release.aab")
+    end
+end
