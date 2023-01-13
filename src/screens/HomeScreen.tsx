@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useImperativeHandle,
-  useCallback,
-} from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Modal,
   View,
@@ -48,8 +42,6 @@ const HomeScreen = (
     }
     updateTODOs(newTODOs);
   }
-
-  console.log("lower handler ref 2", uppRef);
 
   useEffect(() => {
     if (modalVisible)
