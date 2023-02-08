@@ -1,7 +1,6 @@
 export function getDraggableItems(newTODOs) {
   let newDraggableItems = [];
   let lastTODODay = null;
-  console.log("t1", newTODOs)
   newTODOs.map((newTODO, index) => {
     let dayPosition = "middle";
     let currentDay = new Date(newTODO.time).getDay();
@@ -11,9 +10,8 @@ export function getDraggableItems(newTODOs) {
     let endOfDay = currentDay !== nextTODODay;
 
     let date = new Date(newTODO.time);
-    let now = new Date()
-    let isSameDate =
-      date.toLocaleDateString() === now.toLocaleDateString();
+    let now = new Date();
+    let isSameDate = date.toLocaleDateString() === now.toLocaleDateString();
     let happenToday = isSameDate;
     if (beginOfDay) {
       dayPosition = "top";
@@ -37,7 +35,7 @@ export function getDraggableItems(newTODOs) {
           id: newTODO.id,
           topOfDay: beginOfDay,
           bottomOfDay: endOfDay,
-          passed: newTODO.time + newTODO.duration < now.getTime()
+          passed: newTODO.time + newTODO.duration < now.getTime(),
         })
       )
     );

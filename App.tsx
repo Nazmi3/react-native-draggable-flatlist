@@ -1,6 +1,6 @@
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { View, Text, LayoutAnimation } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Text, NativeModules } from "react-native";
 import "react-native-gesture-handler";
 
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
@@ -8,9 +8,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TodoDetails from "./src/screens/TodoDetails";
 import { useImperativeHandle, Children } from "react";
 import { StyleSheet, ToastAndroid, StatusBar } from "react-native";
-import DraggableFlatList from "react-native-draggable-flatlist";
-import { Item, getColor } from "./src/utils";
-import SwipeableButton from "./components/SwipeableButton";
 import Animated from "react-native-reanimated";
 import { FadeOut } from "react-native-reanimated";
 import {
@@ -22,15 +19,18 @@ import {
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Home from "./src/screens/Home";
+import TodoScreen from "./src/screens/Todo";
 import Commitment from "./src/screens/Commitment";
 import { Provider } from "react-redux";
 import store from "./src/store";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { IconComponentProvider, Icon } from "@react-native-material/core";
-import Entypo from "@expo/vector-icons/Entypo";
+// import Entypo from "@expo/vector-icons/Entypo";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Provider as PaperProvider } from 'react-native-paper';
 
 const Tab = createBottomTabNavigator();
+const MyModule = NativeModules.MyModuleName;
 
 let storage = {
   async set(key: string, value: any) {
@@ -103,7 +103,7 @@ function App() {
             <Tab.Navigator>
               <Tab.Screen
                 name="Todo"
-                component={Home}
+                component={TodoScreen}
                 options={{
                   tabBarIcon: ({ color, size }) => (
                     <Icon name="list" size={24} color={color} />
@@ -121,23 +121,6 @@ function App() {
               />
             </Tab.Navigator>
           </NavigationContainer>
-
-          {/* <Stack.Navigator style={{ backgroundColor: "transparent" }}>
-                <Stack.Screen
-                  style={{ backgroundColor: "transparent" }}
-                  name="Home"
-                  component={App1}
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="Details"
-                  component={TodoDetails}
-                  options={({ route }) => ({
-                    title: route.params.todo.text,
-                    headerShown: false,
-                  })}
-                />
-              </Stack.Navigator> */}
         </SafeAreaProvider>
       </SafeAreaView>
     </ImageBackground>
@@ -201,7 +184,9 @@ const styles = StyleSheet.create({
 export default () => (
   <Provider store={store}>
     <IconComponentProvider IconComponent={Entypo}>
-      <App />
+      <PaperProvider>
+        <App />
+      </PaperProvider>
     </IconComponentProvider>
   </Provider>
 );
