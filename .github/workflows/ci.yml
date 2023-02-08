@@ -1,8 +1,7 @@
 on: [push]
 
 jobs:
-  build:
-  name: Hello world
+  name: Hello_world
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v2
