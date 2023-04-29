@@ -23,6 +23,7 @@ export function getDraggableItems(newTODOs) {
       if (!(index === 0 && happenToday))
         newDraggableItems.push({
           id: label,
+          key: label,
           isLabel: true,
           label: label,
         });
