@@ -20,13 +20,14 @@ export function getDraggableItems(newTODOs) {
       else if (happenToday) {
         label = "Today";
       }
-      if (!(index === 0 && happenToday))
+      if (!(index === 0 && happenToday)) {
         newDraggableItems.push({
           id: label,
           key: label,
-          isLabel: true,
+          type: "label",
           label: label,
         });
+      }
     }
 
     newDraggableItems.push(
@@ -34,12 +35,20 @@ export function getDraggableItems(newTODOs) {
         JSON.stringify({
           ...newTODO,
           id: newTODO.id,
+          type: "todo",
           topOfDay: beginOfDay,
           bottomOfDay: endOfDay,
           passed: newTODO.time + newTODO.duration < now.getTime(),
         })
       )
     );
+    let padding = new Date(newTODO.time).toDateString();
+    newDraggableItems.push({
+      id: padding,
+      key: padding,
+      type: "padding",
+      label: padding,
+    });
     lastTODODay = new Date(newTODO.time).getDay();
   });
   return newDraggableItems;
