@@ -8,6 +8,8 @@ import { HStack, VStack } from "@react-native-material/core";
 import moment from "moment/moment";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { SharedElement } from "react-navigation-shared-element";
+import { useDispatch } from "react-redux";
+import { updateTODOList } from "../store/todoSlice";
 
 export const REPEAT = ["freeTime", "day", "weekDay", "month", "solatTime"];
 
@@ -18,21 +20,6 @@ export function resortTodo(todos, todo) {
   console.log("resort todo", todos);
 }
 
-export async function updateTODO(key, field, value) {
-  let todosJSON = await AsyncStorage.getItem("TODOs");
-  let todos = JSON.parse(todosJSON);
-  let todo = todos.find((todo) => todo.key === key);
-
-  todo[field] = value;
-  console.log("field", field);
-
-  if (field === "time") {
-    resortTodo(todos, todo);
-  }
-
-  await AsyncStorage.setItem("TODOs", JSON.stringify(todos));
-}
-
 let count = 0;
 const Details = ({ navigation, route: { params } }) => {
   const [todo, setTodo] = useState(params.todo);
@@ -40,9 +27,31 @@ const Details = ({ navigation, route: { params } }) => {
   const [date, setDate] = useState(new Date(params.todo.time));
   const [mode, setMode] = useState<string | null>(null);
 
+  const d = useDispatch();
+
   function setDBDuration(duration) {
     count += 1;
     updateTODO(todo.key, "duration", duration);
+
+    // let newCommitment = { ...commitment, cost: text }
+    //             setCommitment(newCommitment)
+    //             update("commitment", "cost", newCommitment)
+  }
+
+  async function updateTODO(key, field, value) {
+    let todosJSON = await AsyncStorage.getItem("TODOs");
+    let todos = JSON.parse(todosJSON);
+    let todo = todos.find((todo) => todo.key === key);
+
+    todo[field] = value;
+    console.log("field", field);
+
+    if (field === "time") {
+      resortTodo(todos, todo);
+    }
+
+    d(updateTODOList(todos));
+    await AsyncStorage.setItem("TODOs", JSON.stringify(todos));
   }
 
   function getStringDate(unix) {
@@ -87,6 +96,15 @@ const Details = ({ navigation, route: { params } }) => {
               {todo.text}
             </Text>
           </SharedElement>
+          <Text
+            style={{
+              fontWeight: "500",
+              fontSize: 20,
+              textAlign: "center",
+            }}
+          >
+            {`-`}
+          </Text>
         </View>
         <VStack p={20} spacing={10}>
           <View
@@ -172,8 +190,10 @@ const Details = ({ navigation, route: { params } }) => {
             display="default"
             onChange={(event, date: any) => {
               setMode(null);
-              setDate(date);
-              updateTODO(todo.key, "time", date.getTime());
+              if (date) {
+                setDate(date);
+                updateTODO(todo.key, "time", date.getTime());
+              }
             }}
           />
         )}
