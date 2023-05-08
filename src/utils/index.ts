@@ -1,7 +1,21 @@
+interface TODO {
+  time: number;
+  duration: number;
+}
+
+export function getIndexForTime(TODOs, time) {
+  for (let x = 0; x < TODOs.length; x++) {
+    if (TODOs[x].time > time) return x;
+  }
+  return TODOs.length;
+}
+
 export function getDraggableItems(newTODOs) {
   let newDraggableItems = [];
   let lastTODODay = null;
+  let lastTODO: TODO | null = null;
   newTODOs.map((newTODO, index) => {
+    // iterate todos
     let dayPosition = "middle";
     let currentDay = new Date(newTODO.time).getDay();
     let nextTODO = newTODOs[index + 1];
@@ -29,7 +43,19 @@ export function getDraggableItems(newTODOs) {
         });
       }
     }
-
+    let padding = new Date(newTODO.time).toDateString();
+    // push red padding if clash with next item
+    let clashedWithPrevious = lastTODO
+      ? lastTODO.time + lastTODO.duration > newTODO.time
+      : false;
+    if (clashedWithPrevious) {
+      newDraggableItems.push({
+        id: padding,
+        key: padding,
+        type: "padding",
+        label: padding,
+      });
+    }
     newDraggableItems.push(
       JSON.parse(
         JSON.stringify({
@@ -42,14 +68,8 @@ export function getDraggableItems(newTODOs) {
         })
       )
     );
-    let padding = new Date(newTODO.time).toDateString();
-    newDraggableItems.push({
-      id: padding,
-      key: padding,
-      type: "padding",
-      label: padding,
-    });
     lastTODODay = new Date(newTODO.time).getDay();
+    lastTODO = newTODO;
   });
   return newDraggableItems;
 }
