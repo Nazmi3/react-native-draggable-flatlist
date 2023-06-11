@@ -7,10 +7,10 @@
   "react-native": "src/index.tsx",
   "types": "lib/typescript/index.d.ts",
   "scripts": {
+    "android": "expo run:android",
     "start": "expo start --dev-client",
     "dev": "expo start --android",
     "devOld": "expo start --dev-client",
-    "android": "expo start --android",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject",
