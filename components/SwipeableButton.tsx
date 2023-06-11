@@ -43,7 +43,6 @@ function getBackgroundColor(item) {
     lastTime === 0
       ? false
       : new Date(item.time).getDate() !== new Date(lastTime).getDate();
-  console.log("new Day", new Date(item.time).getDate(), newDay);
   if (newDay) {
     if (index < colors.length - 1) index += 1;
     else index = 0;
