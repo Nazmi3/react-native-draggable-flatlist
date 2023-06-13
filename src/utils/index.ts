@@ -37,7 +37,7 @@ export function getDraggableItems(newTODOs) {
       if (!(index === 0 && happenToday)) {
         newDraggableItems.push({
           id: label,
-          key: label,
+          key: `${label}_label`,
           type: "label",
           label: label,
         });
@@ -51,7 +51,7 @@ export function getDraggableItems(newTODOs) {
     if (clashedWithPrevious) {
       newDraggableItems.push({
         id: padding,
-        key: padding,
+        key: `${padding}_padding`,
         type: "padding",
         label: padding,
       });

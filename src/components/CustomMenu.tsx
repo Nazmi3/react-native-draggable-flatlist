@@ -1,14 +1,37 @@
 import * as React from "react";
-import { View, Pressable } from "react-native";
+import { View, Pressable, StyleProp, ViewStyle } from "react-native";
 import "react-native-gesture-handler";
 import { Menu, MenuItem } from "react-native-material-menu";
 import { Icon } from "@react-native-material/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ToastAndroid } from "react-native";
 
-export default ({ navigation, menustyle }) => {
+export default ({
+  navigation,
+  menustyle,
+}: {
+  navigation: any;
+  menustyle: StyleProp<ViewStyle>;
+}) => {
   const [visible, setVisible] = React.useState(false);
   let _menu = null;
+
+  async function importData() {
+    var RNFS = require("react-native-fs");
+    const path = RNFS.DownloadDirectoryPath + "/todo_data.txt";
+    RNFS.readFile(path, "utf8")
+      .then(async (contents: string) => {
+        console.log("contents", contents);
+        await AsyncStorage.setItem("TODOs", contents);
+        ToastAndroid.show("Data imported please restart the app", 1500);
+      })
+      .catch(() => {
+        ToastAndroid.show(
+          "todo_data.txt not found in download directory",
+          1500
+        );
+      });
+  }
 
   const downloadData = async () => {
     console.log("try to export data");
@@ -17,11 +40,11 @@ export default ({ navigation, menustyle }) => {
     var path = RNFS.DownloadDirectoryPath + "/todo_data.txt";
     const stringifiedJSON = await AsyncStorage.getItem("TODOs");
     RNFS.writeFile(path, stringifiedJSON, "utf8")
-      .then((success) => {
+      .then(() => {
         console.log("FILE WRITTEN! to " + path);
         ToastAndroid.show("Data downloaded", 1500);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.log(err.message);
       });
 
@@ -58,10 +81,17 @@ export default ({ navigation, menustyle }) => {
    */}
         <MenuItem
           onPress={() => {
+            importData();
+          }}
+        >
+          Import
+        </MenuItem>
+        <MenuItem
+          onPress={() => {
             downloadData();
           }}
         >
-          Download
+          Export
         </MenuItem>
         <MenuItem
           onPress={() => {
