@@ -14,6 +14,7 @@ import { Item, getColor } from "../src/utils";
 import { Swipeable } from "react-native-gesture-handler";
 import moment from "moment";
 import { SharedElement } from "react-navigation-shared-element";
+import style from "../src/style";
 
 export function getStringDuration(duration) {
   let hours = 0;
@@ -54,7 +55,7 @@ function getBackgroundColor(item) {
 const SwipeableButton = ({
   navigation,
   item,
-  index,
+  getIndex,
   drag,
   isActive,
   deleteTODO,
@@ -70,16 +71,18 @@ const SwipeableButton = ({
   const renderRightActions = (progress, dragX, onClick) => {
     return (
       <View
-        style={{
-          marginTop: 2,
-          marginBottom: 2,
-          padding: 10,
-          backgroundColor: "red",
-          alignContent: "center",
-          justifyContent: "center",
-        }}
+        style={[
+          style.box,
+          {
+            padding: 10,
+            backgroundColor: "red",
+            alignContent: "center",
+            justifyContent: "center",
+            borderRadius: 10,
+          },
+        ]}
       >
-        <Pressable onPress={onClick}>
+        <Pressable onPress={onClick} style={{}}>
           <Text style={{ color: "white", fontWeight: "bold" }}>DELETE</Text>
         </Pressable>
       </View>
@@ -106,14 +109,14 @@ const SwipeableButton = ({
             onLongPress={drag}
             onPress={() => {
               console.log("button clicked");
-              navigation.navigate("Details", {
+              navigation.navigate("TodoDetails", {
                 todo: item,
               });
             }}
             delayLongPress={200}
             disabled={isActive}
             style={[
-              styles.rowItem,
+              style.rowItem,
               {
                 borderTopLeftRadius: item.topOfDay ? 10 : 0,
                 borderTopRightRadius: item.topOfDay ? 10 : 0,
@@ -126,40 +129,52 @@ const SwipeableButton = ({
             <View
               style={{
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                flexDirection: "row",
               }}
             >
-              <SharedElement id={item.text}>
-                <Text
-                  style={[
-                    styles.text,
-                    {
-                      fontSize: (rate / (index + rate)) * 30,
-                      textAlign: "center",
-                    },
-                  ]}
-                >
-                  {item.text}
-                </Text>
-              </SharedElement>
+              <View
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <SharedElement id={item.text}>
+                  <Text
+                    style={[
+                      styles.text,
+                      {
+                        fontSize: (rate / (getIndex() + rate)) * 30,
+                        textAlign: "center",
+                      },
+                    ]}
+                  >
+                    {item.text}
+                  </Text>
+                </SharedElement>
 
-              <Text
-                style={{
-                  textAlign: "center",
-                }}
-              >
-                {item.time
-                  ? moment(item.time).format("DD/MM/YYYY hh:mm a")
-                  : undefined}
-              </Text>
-              <Text
-                style={{
-                  textAlign: "center",
-                }}
-              >
-                {getStringDuration(item.duration)}
-              </Text>
+                <Text
+                  style={{
+                    textAlign: "center",
+                  }}
+                >
+                  {item.time
+                    ? moment(item.time).format("DD/MM/YYYY hh:mm a")
+                    : undefined}
+                </Text>
+                <Text
+                  style={{
+                    textAlign: "center",
+                  }}
+                >
+                  {getStringDuration(item.duration)}
+                </Text>
+              </View>
+              {item.repeat && (
+                <View>
+                  <Text>(R)</Text>
+                </View>
+              )}
             </View>
           </TouchableOpacity>
         </View>
@@ -169,15 +184,6 @@ const SwipeableButton = ({
 };
 
 const styles = StyleSheet.create({
-  rowItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    shadowColor: "#171717",
-    shadowOffset: { width: -2, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
   container: {
     flex: 1,
     paddingTop: 20,

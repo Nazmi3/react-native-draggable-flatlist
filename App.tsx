@@ -4,8 +4,6 @@ import { Text, NativeModules } from "react-native";
 import "react-native-gesture-handler";
 
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import TodoDetails from "./src/screens/TodoDetails";
 import { useImperativeHandle, Children } from "react";
 import { StyleSheet, ToastAndroid, StatusBar } from "react-native";
 import Animated from "react-native-reanimated";
@@ -19,7 +17,8 @@ import {
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TodoScreen from "./src/screens/Todo";
+import TodoScreen from "./src/screens/AppChild";
+// import Sample from "./src/screens/Sample";
 import Commitment from "./src/screens/Commitment";
 import { Provider } from "react-redux";
 import store from "./src/store";
@@ -27,24 +26,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { IconComponentProvider, Icon } from "@react-native-material/core";
 // import Entypo from "@expo/vector-icons/Entypo";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider } from "react-native-paper";
+import CustomMenu from "./src/components/CustomMenu";
+import Experimental from "./src/screens/Experimental";
 
 const Tab = createBottomTabNavigator();
 const MyModule = NativeModules.MyModuleName;
-
-let storage = {
-  async set(key: string, value: any) {
-    return AsyncStorage.setItem(key, JSON.stringify(value));
-  },
-  async get(key: string) {
-    try {
-      let stringData = await AsyncStorage.getItem(key);
-      return JSON.parse(stringData ?? "");
-    } catch (error) {
-      throw error;
-    }
-  },
-};
 
 if (
   Platform.OS === "android" &&
@@ -64,6 +51,7 @@ function Row(props) {
     ],
   };
   useEffect(() => {
+    MyModule.doSomething("Gu", 1000);
     Animated.timing(activeAnim.current, {
       duration: 300,
       easing: Easing.bounce,
@@ -100,13 +88,26 @@ function App() {
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
         <SafeAreaProvider style={{ backgroundColor: "transparent" }}>
           <NavigationContainer theme={navTheme}>
-            <Tab.Navigator>
+            <Tab.Navigator
+              screenOptions={({ route, navigation }) => ({
+                headerRight: () => (
+                  <CustomMenu
+                    menutext="Menu"
+                    menustyle={{ marginRight: 14 }}
+                    textStyle={{ color: "white" }}
+                    navigation={navigation}
+                    route={route}
+                    isIcon={true}
+                  />
+                ),
+              })}
+            >
               <Tab.Screen
                 name="Todo"
                 component={TodoScreen}
                 options={{
                   tabBarIcon: ({ color, size }) => (
-                    <Icon name="list" size={24} color={color} />
+                    <Icon name="format-list-bulleted" size={24} color={color} />
                   ),
                 }}
               />
@@ -115,7 +116,16 @@ function App() {
                 component={Commitment}
                 options={{
                   tabBarIcon: ({ color, size }) => (
-                    <Icon name="shopping-cart" size={24} color={color} />
+                    <Icon name="shopping-outline" size={24} color={color} />
+                  ),
+                }}
+              />
+              <Tab.Screen
+                name="Experimental"
+                component={Experimental}
+                options={{
+                  tabBarIcon: ({ color, size }) => (
+                    <Icon name="shopping-outline" size={24} color={color} />
                   ),
                 }}
               />
@@ -183,7 +193,7 @@ const styles = StyleSheet.create({
 
 export default () => (
   <Provider store={store}>
-    <IconComponentProvider IconComponent={Entypo}>
+    <IconComponentProvider IconComponent={MaterialCommunityIcons}>
       <PaperProvider>
         <App />
       </PaperProvider>
