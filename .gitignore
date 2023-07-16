@@ -7,3 +7,6 @@ yarn-error.log
 
 todo/yarn.lock
 yarn.lock
+
+# secrets
+deployment/secrets/*
