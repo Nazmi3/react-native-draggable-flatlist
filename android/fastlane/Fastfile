@@ -32,7 +32,12 @@ platform :android do
 
   desc "Deploy a new version to the Google Play"
   lane :publish do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
+    # gradle(task: "clean assembleRelease")
+    versions = google_play_track_version_codes(track: "production")
+    version_code = versions[0]
+    upload_to_play_store(
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      version_code: version_code+1)
   end
 end
