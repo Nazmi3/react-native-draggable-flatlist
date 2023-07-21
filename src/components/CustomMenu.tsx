@@ -1,12 +1,19 @@
 import * as React from "react";
-import { View, Pressable, StyleProp, ViewStyle } from "react-native";
+import {
+  View,
+  Pressable,
+  StyleProp,
+  ViewStyle,
+  PermissionsAndroid,
+} from "react-native";
 import "react-native-gesture-handler";
 import { Menu, MenuItem } from "react-native-material-menu";
 import { Icon } from "@react-native-material/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ToastAndroid } from "react-native";
 import { add, addFull, get } from "../manager/sqlite";
-import RNFS from "react-native-fs";
+import { Dirs, FileSystem } from "react-native-file-access";
+import DocumentPicker from "react-native-document-picker";
 
 export default ({
   navigation,
@@ -18,58 +25,71 @@ export default ({
   const [visible, setVisible] = React.useState(false);
   let _menu = null;
 
-  async function importCommitment() {
+  async function importData(name) {
     var RNFS = require("react-native-fs");
-    const path = RNFS.DownloadDirectoryPath + "/commitment_data.txt";
-    RNFS.readFile(path, "utf8")
-      .then(async (contents: string) => {
-        console.log("contents", contents);
-        let commitments = JSON.parse(contents);
+    const path = RNFS.DownloadDirectoryPath + `/${name}_data.txt`;
+
+    const response = await DocumentPicker.pick({
+      presentationStyle: "fullScreen",
+    });
+
+    console.log("response", response);
+
+    RNFS.readFile(response[0].uri, "utf8")
+      .then(async (jsonString: string) => {
+        console.log("contents", jsonString);
         try {
-          for (var commitment of commitments) {
-            console.log("c", commitment);
-            addFull("commitment", commitment);
+          if (name === "commitment") {
+            let jsonObject = JSON.parse(jsonString);
+            for (var row of jsonObject) {
+              console.log("c", row);
+              addFull(name, row);
+            }
+          } else if (name === "todo") {
+            await AsyncStorage.setItem("TODOs", jsonString);
           }
-          ToastAndroid.show("Data imported. Please restart the app", 1500);
+
+          ToastAndroid.show(`${name} imported. Please restart the app`, 1500);
         } catch (error) {
           ToastAndroid.show("Error importing data", 1500);
         }
       })
-      .catch(() => {
+      .catch((e) => {
         ToastAndroid.show(
-          "todo_data.txt not found in download directory",
+          `${name}_data.txt not found in Downloads:` + JSON.stringify(e),
           1500
         );
       });
   }
 
-  const downloadData = async () => {
-    console.log("try to export data");
-    // export data to a json file using react native library
-    var RNFS = require("react-native-fs");
-    var path = RNFS.DownloadDirectoryPath + "/todo_data.txt";
-    const stringifiedJSON = await AsyncStorage.getItem("TODOs");
-    RNFS.writeFile(path, stringifiedJSON, "utf8")
-      .then(() => {
-        console.log("FILE WRITTEN! to " + path);
-        ToastAndroid.show("Data downloaded", 1500);
-      })
-      .catch((err: any) => {
-        console.log(err.message);
-      });
-  };
+  const exportData = async (name) => {
+    console.log(`export ${name}`);
 
-  const exportCommitment = async () => {
-    console.log("export commitment");
-    let commitmentJSON = await get("commitment");
-    console.log("commitmentJSON", commitmentJSON);
+    const granted = await PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+    ]);
+
+    console.log("granted", granted);
+
+    let jsonString = null;
+    if (name === "commitment") {
+      const jsonObject = await get(name);
+      jsonString = JSON.stringify(jsonObject);
+    } else if (name === "todo") {
+      jsonString = await AsyncStorage.getItem("TODOs");
+    }
+
+    console.log("dataJSON", jsonString);
     // export data to a json file using react native library
     var RNFS = require("react-native-fs");
-    var path = RNFS.DownloadDirectoryPath + "/commitment_data.txt";
-    RNFS.writeFile(path, JSON.stringify(commitmentJSON), "utf8")
+    const targetName = `${name}_data.txt`;
+    var path = RNFS.TemporaryDirectoryPath + targetName;
+    RNFS.writeFile(path, jsonString, "utf8")
       .then(() => {
         console.log("FILE WRITTEN! to " + path);
-        ToastAndroid.show("Data exported", 1500);
+        FileSystem.cpExternal(path, `/${targetName}`, "downloads");
+        ToastAndroid.show(`${targetName} exported`, 1500);
       })
       .catch((err: any) => {
         console.log(err.message);
@@ -88,24 +108,24 @@ export default ({
           </Pressable>
         }
       >
-        {/* <MenuItem onPress={() => {Alert.alert('PopUp Menu Button Clicked...')}}>
-            Menu Item 1
-          </MenuItem>
-  
-          <MenuItem disabled>Disabled Menu Item 2</MenuItem>
-  
-          <MenuDivider />
-   */}
         <MenuItem
           onPress={() => {
-            importCommitment();
+            importData("todo");
           }}
         >
-          Import
+          Import Todo
         </MenuItem>
         <MenuItem
           onPress={() => {
-            exportCommitment();
+            importData("commitment");
+          }}
+        >
+          Import Commitment
+        </MenuItem>
+        <MenuItem
+          onPress={() => {
+            exportData("todo");
+            exportData("commitment");
           }}
         >
           Export

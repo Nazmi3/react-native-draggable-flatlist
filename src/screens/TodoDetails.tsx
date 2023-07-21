@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, Slider, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  Slider,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getStringDuration } from "../../components/SwipeableButton";
-import { HStack, VStack } from "@react-native-material/core";
+import DatePicker from "../components/DatePicker";
+import { HStack, Stack, VStack } from "@react-native-material/core";
 import moment from "moment/moment";
+
 import DateTimePicker from "@react-native-community/datetimepicker";
+
 import { SharedElement } from "react-navigation-shared-element";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateTODOList } from "../store/todoSlice";
 
 export const REPEAT = ["freeTime", "day", "weekDay", "month", "solatTime"];
@@ -17,25 +27,41 @@ export function resortTodo(todos, todo) {
   todos.sort(function (a, b) {
     return a.time - b.time;
   });
-  console.log("resort todo", todos);
 }
 
 let count = 0;
 const Details = ({ navigation, route: { params } }) => {
+  const TODOs: any[] = useSelector((state) => state.todos);
   const [todo, setTodo] = useState(params.todo);
   const [duration, setDuration] = useState(params.todo.duration);
   const [date, setDate] = useState(new Date(params.todo.time));
   const [mode, setMode] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [markedDates, setMarkedDates] = useState<number[]>([]);
 
   const d = useDispatch();
+
+  useEffect(() => {
+    updateMarkedDates();
+  }, []);
+
+  function updateMarkedDates() {
+    let newMarkedDates: number[] = [];
+
+    TODOs.map((TODO) => {
+      const date = new Date(TODO.time);
+      if (date.getMonth() === new Date().getMonth()) {
+        console.log("should mark", date.getDate());
+        newMarkedDates.push(date.getDate());
+      }
+    });
+
+    setMarkedDates(newMarkedDates);
+  }
 
   function setDBDuration(duration) {
     count += 1;
     updateTODO(todo.key, "duration", duration);
-
-    // let newCommitment = { ...commitment, cost: text }
-    //             setCommitment(newCommitment)
-    //             update("commitment", "cost", newCommitment)
   }
 
   async function updateTODO(key, field, value) {
@@ -44,7 +70,6 @@ const Details = ({ navigation, route: { params } }) => {
     let todo = todos.find((todo) => todo.key === key);
 
     todo[field] = value;
-    console.log("field", field);
 
     if (field === "time") {
       resortTodo(todos, todo);
@@ -68,6 +93,7 @@ const Details = ({ navigation, route: { params } }) => {
     let nextIndex = isLastIndex ? 0 : currentIndex + 1;
     return REPEAT[nextIndex];
   }
+
   return (
     <SharedElement id={`${todo.text}_box`}>
       <View
@@ -181,7 +207,22 @@ const Details = ({ navigation, route: { params } }) => {
             </TouchableOpacity>
           </HStack>
         </VStack>
-        {mode && (
+        <DatePicker
+          mode={mode}
+          markedDates={markedDates}
+          onCancel={() => setMode(null)}
+          onOk={(d: any) => {
+            date.setFullYear(d.year);
+            date.setMonth(d.month);
+            date.setDate(d.date);
+
+            setDate(date);
+            updateTODO(todo.key, "time", date.getTime());
+
+            setMode(null);
+          }}
+        />
+        {mode == "time" && (
           <DateTimePicker
             testID="dateTimePicker"
             value={date}
@@ -204,7 +245,6 @@ const Details = ({ navigation, route: { params } }) => {
 
 Details.sharedElements = (navigation) => {
   let todo = navigation.params.todo;
-  console.log("navigation", todo.time);
   return [
     { id: `${todo.text}_box`, animation: "fade-in" },
     { id: todo.text, animation: "fade-in" },
