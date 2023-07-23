@@ -245,7 +245,7 @@ const Todo = ({ navigation, route: { params } }) => {
     } catch (error) {}
   }
 
-  const renderItem = (params) => {
+  const renderTodoBox = (params) => {
     let type = params.item.type;
     let draggableItem = params.item;
     return (
@@ -322,7 +322,7 @@ const Todo = ({ navigation, route: { params } }) => {
           keyExtractor={(item) => {
             return item.key;
           }}
-          renderItem={renderItem}
+          renderItem={renderTodoBox}
           activationDistance={0}
         />
       </View>
