@@ -118,11 +118,6 @@ const Todo = ({ navigation, route: { params } }) => {
     console.log("setdraggableitems", getDraggableItems(TODOs));
     setAnimation();
     setDraggableItems3(getDraggableItems(TODOs));
-    LayoutAnimation.configureNext(
-      LayoutAnimation.Presets.spring,
-      () => console.log("animation finishes 1"),
-      () => console.log("animation failed")
-    );
   }, [TODOs]);
 
   async function deleteTODO(todo: any) {
