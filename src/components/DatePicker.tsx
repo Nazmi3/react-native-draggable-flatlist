@@ -20,23 +20,25 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { SharedElement } from "react-navigation-shared-element";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTODOList } from "../store/todoSlice";
+import { MarkedDatesType } from "../screens/TodoDetails";
 
 export default ({
   mode,
+  initialDate,
   markedDates,
   onCancel,
   onOk,
 }: {
-  markedDates: number[];
+  markedDates: MarkedDatesType;
 }) => {
   const [table, setTable] = useState<null | any>(null);
   const [selectedDate, setSelectedDate] = useState({});
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentMonth, setCurrentMonth] = useState(initialDate.getMonth());
   const now = useRef(new Date());
 
   useEffect(() => {
-    renderItems();
-  }, [markedDates, currentMonth]);
+    if (mode === "date") renderItems();
+  }, [mode, markedDates, currentMonth]);
 
   function handleItemPress(item) {
     let newTable = JSON.parse(JSON.stringify(table));
@@ -66,31 +68,30 @@ export default ({
         if (row === 0 && column < startDayName) {
           columnItems.push({});
         } else {
+          if (currentDay > totalDays) break;
           columnItems.push({
             row: row,
             column: column,
             display: currentDay,
           });
-          if (currentDay >= totalDays) break;
           currentDay++;
         }
       }
       tableItems.push(columnItems);
-      if (currentDay >= totalDays) break;
+      if (currentDay > totalDays) break;
     }
-    console.log("tableItems", startDayName, totalDays, tableItems);
     return tableItems;
   }
 
   function renderItems() {
-    const tabl = generateTableItems();
+    const tableItems = generateTableItems();
 
-    function getItem(obj: any, date: number) {
+    function getCalendarItem(obj: any, date: Date) {
       let rowIndex = null;
       let columnIndex = null;
       for (let i = 0; i < obj.length; i++) {
         for (let j = 0; j < obj[i].length; j++) {
-          if (obj[i][j].display === date) {
+          if (obj[i][j].display === date.getDate()) {
             rowIndex = i;
             columnIndex = j;
             break;
@@ -100,11 +101,14 @@ export default ({
       return obj[rowIndex][columnIndex];
     }
 
+    // mark table
     for (const markedDate of markedDates) {
-      let item = getItem(tabl, markedDate);
-      item.backgroundColor = "red";
+      if (markedDate.date.getMonth() === currentMonth) {
+        let item = getCalendarItem(tableItems, markedDate.date);
+        item.backgroundColor = markedDate.color;
+      }
     }
-    setTable(tabl);
+    setTable(tableItems);
   }
 
   return (
@@ -146,6 +150,8 @@ export default ({
                         marginLeft: 15,
                         marginRight: 15,
                         backgroundColor: item.backgroundColor,
+                        // borderColor: "green",
+                        // borderWidth: 1,
                       }}
                     >
                       {item.display}
@@ -154,19 +160,14 @@ export default ({
                 ))}
               </HStack>
             ))}
-          <Pressable
-            style={[{ padding: 10, opacity: 0.5 }]}
-            onPress={() => setShowModal(false)}
-          >
-            <HStack spacing={10}>
-              <Pressable onPress={onCancel}>
-                <Text>Cancel</Text>
-              </Pressable>
-              <Pressable onPress={() => onOk(selectedDate)}>
-                <Text>Ok</Text>
-              </Pressable>
-            </HStack>
-          </Pressable>
+          <HStack spacing={10}>
+            <Pressable onPress={onCancel}>
+              <Text>Cancel</Text>
+            </Pressable>
+            <Pressable onPress={() => onOk(selectedDate)}>
+              <Text>Ok</Text>
+            </Pressable>
+          </HStack>
         </VStack>
       </View>
     </Modal>
