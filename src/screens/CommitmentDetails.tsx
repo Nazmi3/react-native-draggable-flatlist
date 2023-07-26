@@ -1,12 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  Slider,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Pressable } from "react-native";
 
 import { getStringDuration } from "../../components/SwipeableButton";
 import { HStack, VStack } from "@react-native-material/core";
@@ -15,9 +8,9 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { SharedElement } from "react-navigation-shared-element";
 import { TextInput } from "react-native-gesture-handler";
 
-import { add, get, update, remove, execute } from "../manager/sqlite";
+import { update } from "../manager/sqlite";
 import { useDispatch } from "react-redux";
-import { refreshCommitments, updateCommitment } from "../store/commitmentSlice";
+import { refreshCommitments } from "../store/commitmentSlice";
 
 export const REPEAT = ["freeTime", "day", "weekDay", "month", "solatTime"];
 
@@ -25,7 +18,6 @@ export function resortTodo(todos, todo) {
   todos.sort(function (a, b) {
     return a.time - b.time;
   });
-  console.log("resort todo", todos);
 }
 
 let count = 0;
@@ -149,7 +141,6 @@ const Details = ({ navigation, route: { params } }) => {
 
 Details.sharedElements = (navigation) => {
   let todo = navigation.params.commitment;
-  console.log("navigation", todo.time);
   return [
     { id: `${todo.text}_box`, animation: "fade-in" },
     { id: todo.text, animation: "fade-in" },

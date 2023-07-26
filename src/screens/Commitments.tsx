@@ -130,7 +130,7 @@ export default function Home({ navigation }) {
     }
   }
 
-  async function deleteCommitment(commitm: any) {
+  function deleteCommitment(commitm: any) {
     dispatch(updateCommitment(commitments.filter((c) => c.id !== commitm.id)));
     remove("commitment", commitm.id);
   }
@@ -232,11 +232,11 @@ export default function Home({ navigation }) {
     }
   }
 
-  function addTODO(newCommitment, TODOs) {
+  async function addCommitment(newCommitment, TODOs) {
     newCommitment.time = new Date().toISOString();
-    add("commitment", newCommitment);
+    const id = await add("commitment", newCommitment);
+    newCommitment.id = id;
     dispatch(addcommitment(newCommitment));
-    // setCommitment([...commitments, newCommitment]);
   }
 
   async function expandTODO(item) {
@@ -291,9 +291,8 @@ export default function Home({ navigation }) {
               newTODO={newTODO}
               setNewTODO={setNewTODO}
               onEndEdit={(e, textInput) => {
-                console.log("on finish edit", e, "yo");
                 setModalVisible(false);
-                addTODO(
+                addCommitment(
                   {
                     ...defaultTODO,
                     text: textInput,
