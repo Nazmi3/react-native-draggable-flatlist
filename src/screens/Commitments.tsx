@@ -1,8 +1,6 @@
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { View, Text, LayoutAnimation } from "react-native";
 import useCachedResources from "../../hooks/useCachedResources";
-import useColorScheme from "../../hooks/useColorScheme";
 import ActionProvider from "../components/ActionProvider";
 import "react-native-gesture-handler";
 import {
@@ -10,19 +8,14 @@ import {
   GestureHandlerRootView,
   PinchGestureHandler,
   State,
-  TapGestureHandler,
 } from "react-native-gesture-handler";
-import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
-import { StyleSheet, ToastAndroid, StatusBar } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { ToastAndroid, StatusBar } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
-import { Item, getColor, getDraggableItems } from "../utils/index";
 import Commitment from "../components/CommitmentItemList";
-import { add, get, update, remove, execute } from "../manager/sqlite";
-import { FadeOut } from "react-native-reanimated";
+import { add, update, remove } from "../manager/sqlite";
 
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import moment, { months } from "moment";
 import { v4 as uuid } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import CommitmentDetails from "./CommitmentDetails";
@@ -32,8 +25,25 @@ import {
   refreshCommitments,
   updateCommitment,
 } from "../store/commitmentSlice";
-import styles from "../style";
 import Box from "../components/Box";
+
+export const setAnimation = () => {
+  LayoutAnimation.configureNext({
+    duration: 250,
+    update: {
+      type: LayoutAnimation.Types.easeInEaseOut,
+      springDamping: 0.7,
+    },
+  });
+  LayoutAnimation.configureNext({
+    duration: 500,
+    create: {
+      type: LayoutAnimation.Types.easeInEaseOut,
+      property: LayoutAnimation.Properties.scaleXY,
+      springDamping: 0.7,
+    },
+  });
+};
 
 const Stack = createSharedElementStackNavigator();
 
@@ -53,7 +63,7 @@ export default function Home({ navigation }) {
 
   const commitments = useSelector((state) => state.commitments);
   const TODOs = useSelector((state) => state.todos);
-  const [movable, setMovable] = useState<any[]>([]);
+  const [movables, setMovables] = useState<any[]>([]);
   const nextMonthIndex = useRef<null | number>(null);
   const dispatch = useDispatch();
 
@@ -70,8 +80,6 @@ export default function Home({ navigation }) {
     // },
   };
 
-  console.log("commitments", movable);
-
   useFocusEffect(
     useCallback(() => {
       // focusing
@@ -81,6 +89,8 @@ export default function Home({ navigation }) {
   );
 
   useEffect(() => {
+    const millisstart = new Date().getTime();
+
     let draggableItemT = [];
 
     // insert next month label
@@ -109,26 +119,12 @@ export default function Home({ navigation }) {
     commitments.map((commitment) => (totalCommitment += commitment.cost));
     setTotalCommitment(totalCommitment);
 
-    setMovable(draggableItemT);
+    const millisnow = new Date().getTime();
+    console.log("movables", draggableItemT);
+    console.log("massage speed:" + (millisnow - millisstart) + "ms");
+    setAnimation();
+    setMovables(draggableItemT);
   }, [commitments]);
-
-  function setField(table, searchKey, searchValue, key, value) {
-    switch (table) {
-      case "commitment":
-        setCommitment(
-          commitments.map((c) => {
-            if (c[searchKey] === searchValue) {
-              c[key] = value;
-              return c;
-            } else {
-              return c;
-            }
-          })
-        );
-        break;
-      default:
-    }
-  }
 
   function deleteCommitment(commitm: any) {
     dispatch(updateCommitment(commitments.filter((c) => c.id !== commitm.id)));
@@ -154,7 +150,7 @@ export default function Home({ navigation }) {
   }
 
   function handleReposition({ data: newMovables, from, to }) {
-    setMovable(newMovables);
+    setMovables(newMovables);
     if (from < nextMonthIndex.current && to >= nextMonthIndex.current) {
       // moved to next month
       nextMonthIndex.current = nextMonthIndex.current - 1;
@@ -312,11 +308,11 @@ export default function Home({ navigation }) {
                 <DraggableFlatList
                   ref={draggableHandler}
                   simultaneousHandlers={[tapHandler, pinchHandler]}
-                  data={movable}
+                  data={movables}
                   onDragBegin={() => console.log("drag begin")}
                   onDragEnd={handleReposition}
                   keyExtractor={(item) => {
-                    return item.key;
+                    return item.id;
                   }}
                   renderItem={renderItem}
                   activationDistance={0}
