@@ -15,6 +15,11 @@ import { v4 as uuid } from "uuid";
 import { useDispatch } from "react-redux";
 
 const Todo = ({ navigation, route: { params } }) => {
+  const defaultTODO = {
+    id: 0,
+    repeat: false,
+  };
+
   const TODOs = useSelector((state) => state.todos);
   const [draggableItems3, setDraggableItems3] = useState([]);
   const draggableHandler = React.createRef();
@@ -105,8 +110,6 @@ const Todo = ({ navigation, route: { params } }) => {
   async function updateTODOs(newTODOs) {
     try {
       dispatch(setTODOs(newTODOs));
-      setAnimation();
-      // LayoutAnimation.configureNext(layoutAnimConfig);
       await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));
     } catch (error) {
       // Error saving data
@@ -114,8 +117,6 @@ const Todo = ({ navigation, route: { params } }) => {
   }
 
   useEffect(() => {
-    console.log("todos changed", TODOs);
-    console.log("setdraggableitems", getDraggableItems(TODOs));
     setAnimation();
     setDraggableItems3(getDraggableItems(TODOs));
   }, [TODOs]);
@@ -331,7 +332,3 @@ const Todo = ({ navigation, route: { params } }) => {
 };
 
 export default Todo;
-export const defaultTODO = {
-  id: 0,
-  repeat: false,
-};
