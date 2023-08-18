@@ -29,6 +29,7 @@ export default ({
   onCancel,
   onOk,
 }: {
+  initialDate: Date;
   markedDates: MarkedDatesType;
 }) => {
   const [table, setTable] = useState<null | any>(null);
@@ -44,7 +45,13 @@ export default ({
     let newTable = JSON.parse(JSON.stringify(table));
 
     // manipulate table
-    newTable[item.row][item.column].backgroundColor = "green";
+    newTable = newTable.map((tableRow) =>
+      tableRow.map((tableItem) =>
+        tableItem === newTable[item.row][item.column]
+          ? { ...tableItem, selected: true }
+          : { ...tableItem, selected: false }
+      )
+    );
     setSelectedDate({
       year: now.current.getFullYear(),
       month: currentMonth,
@@ -101,7 +108,12 @@ export default ({
       return obj[rowIndex][columnIndex];
     }
 
-    // mark table
+    // mark current date
+    if (currentMonth === initialDate.getMonth()) {
+      let item = getCalendarItem(tableItems, initialDate);
+      item.borderColor = "green";
+    }
+    // mark filled dates
     for (const markedDate of markedDates) {
       if (markedDate.date.getMonth() === currentMonth) {
         let item = getCalendarItem(tableItems, markedDate.date);
@@ -149,9 +161,11 @@ export default ({
                         width: 20,
                         marginLeft: 15,
                         marginRight: 15,
-                        backgroundColor: item.backgroundColor,
-                        // borderColor: "green",
-                        // borderWidth: 1,
+                        backgroundColor: item.selected
+                          ? "green"
+                          : item.backgroundColor,
+                        borderColor: item.borderColor ?? "white",
+                        borderWidth: 1,
                       }}
                     >
                       {item.display}

@@ -33,24 +33,30 @@ export const execute = (sql) => {
   );
 };
 export const add = (table, item) => {
-  addTable(table);
-  db.transaction(
-    function (txn) {
-      txn.executeSql(
-        `INSERT INTO ${table} (text, time) VALUES (:text, :time)`,
-        [item.text, item.time]
-      );
-      txn.executeSql(`select * from ${table}`, [], (_, { rows }) =>
-        console.log("rows", JSON.stringify(rows))
-      );
-    },
-    (error) => {
-      console.log("error add data", error);
-    },
-    () => {
-      console.log("success add data");
-    }
-  );
+  return new Promise((resolve, reject) => {
+    addTable(table);
+    db.transaction(
+      function (txn) {
+        txn.executeSql(
+          `INSERT INTO ${table} (text, time) VALUES (:text, :time)`,
+          [item.text, item.time],
+          (object, result) => {
+            resolve(result.insertId);
+          }
+        );
+        txn.executeSql(`select * from ${table}`, [], (_, { rows }) =>
+          console.log("rows", JSON.stringify(rows))
+        );
+      },
+      (error) => {
+        console.log("error add data", error);
+        reject(error);
+      },
+      () => {
+        console.log("success add data");
+      }
+    );
+  });
 };
 export const addFull = (table, item) => {
   addTable(table);
