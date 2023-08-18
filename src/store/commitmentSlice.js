@@ -26,17 +26,13 @@ export const commitmentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(refreshCommitments.fulfilled, (state, action) => {
-      console.log("p1", action.payload);
       return action.payload;
     });
   },
 });
 
-export const {
-  updateCommitment,
-  deletecommitment,
-  addcommitment,
-} = commitmentSlice.actions;
+export const { updateCommitment, deletecommitment, addcommitment } =
+  commitmentSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
