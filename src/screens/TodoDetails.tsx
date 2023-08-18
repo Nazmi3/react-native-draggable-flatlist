@@ -21,6 +21,8 @@ import { SharedElement } from "react-navigation-shared-element";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTODOList } from "../store/todoSlice";
 
+export type MarkedDatesType = { color: string; date: Date }[];
+
 export const REPEAT = ["freeTime", "day", "weekDay", "month", "solatTime"];
 
 export function resortTodo(todos, todo) {
@@ -37,29 +39,20 @@ const Details = ({ navigation, route: { params } }) => {
   const [date, setDate] = useState(new Date(params.todo.time));
   const [mode, setMode] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [markedDates, setMarkedDates] = useState<number[]>([]);
+  const [markedDates, setMarkedDates] = useState<MarkedDatesType>([]);
 
   const d = useDispatch();
 
-  useEffect(() => {
-    updateMarkedDates();
-  }, []);
-
   function updateMarkedDates() {
-    let newMarkedDates: number[] = [];
-
-    TODOs.map((TODO) => {
-      const date = new Date(TODO.time);
-      if (date.getMonth() === new Date().getMonth()) {
-        console.log("should mark", date.getDate());
-        newMarkedDates.push(date.getDate());
-      }
-    });
-
-    setMarkedDates(newMarkedDates);
+    setMarkedDates(
+      TODOs.map((TODO) => ({
+        color: "red",
+        date: new Date(TODO.time),
+      }))
+    );
   }
 
-  function setDBDuration(duration) {
+  function setDBDuration(duration: number) {
     count += 1;
     updateTODO(todo.key, "duration", duration);
   }
@@ -198,7 +191,12 @@ const Details = ({ navigation, route: { params } }) => {
             </TouchableOpacity>
           )}
           <HStack>
-            <TouchableOpacity onPress={() => setMode("date")}>
+            <TouchableOpacity
+              onPress={() => {
+                updateMarkedDates();
+                setMode("date");
+              }}
+            >
               <Text>{getStringDate(date.getTime())}</Text>
             </TouchableOpacity>
             <Text>{` `}</Text>
@@ -209,6 +207,7 @@ const Details = ({ navigation, route: { params } }) => {
         </VStack>
         <DatePicker
           mode={mode}
+          initialDate={date}
           markedDates={markedDates}
           onCancel={() => setMode(null)}
           onOk={(d: any) => {
