@@ -19,7 +19,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TodoScreen from "./src/screens/AppChild";
 // import Sample from "./src/screens/Sample";
-import Commitment from "./src/screens/Commitment";
+import Commitment from "./src/screens/Commitments";
 import { Provider } from "react-redux";
 import store from "./src/store";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -120,7 +120,7 @@ function App() {
                   ),
                 }}
               />
-              <Tab.Screen
+              {/* <Tab.Screen
                 name="Experimental"
                 component={Experimental}
                 options={{
@@ -128,7 +128,7 @@ function App() {
                     <Icon name="shopping-outline" size={24} color={color} />
                   ),
                 }}
-              />
+              /> */}
             </Tab.Navigator>
           </NavigationContainer>
         </SafeAreaProvider>
