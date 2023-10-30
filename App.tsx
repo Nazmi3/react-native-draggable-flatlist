@@ -4,10 +4,10 @@ import { Text, NativeModules } from "react-native";
 import "react-native-gesture-handler";
 
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { useImperativeHandle, Children } from "react";
-import { StyleSheet, ToastAndroid, StatusBar } from "react-native";
+import { StyleSheet } from "react-native";
 import Animated from "react-native-reanimated";
-import { FadeOut } from "react-native-reanimated";
+import { BlurView } from "expo-blur";
+
 import {
   Image,
   Platform,
@@ -15,8 +15,6 @@ import {
   UIManager,
   ImageBackground,
 } from "react-native";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import TodoScreen from "./src/screens/AppChild";
 // import Sample from "./src/screens/Sample";
 import Commitment from "./src/screens/Commitments";
@@ -28,7 +26,6 @@ import { IconComponentProvider, Icon } from "@react-native-material/core";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Provider as PaperProvider } from "react-native-paper";
 import CustomMenu from "./src/components/CustomMenu";
-import Experimental from "./src/screens/Experimental";
 
 const Tab = createBottomTabNavigator();
 const MyModule = NativeModules.MyModuleName;
@@ -90,6 +87,21 @@ function App() {
           <NavigationContainer theme={navTheme}>
             <Tab.Navigator
               screenOptions={({ route, navigation }) => ({
+                headerTitleStyle: { color: "white" },
+                headerBackground: () => (
+                  <BlurView
+                    tint="light"
+                    intensity={10}
+                    style={StyleSheet.absoluteFill}
+                  />
+                ),
+                tabBarBackground: () => (
+                  <BlurView
+                    tint="light"
+                    intensity={10}
+                    style={StyleSheet.absoluteFill}
+                  />
+                ),
                 headerRight: () => (
                   <CustomMenu
                     menutext="Menu"

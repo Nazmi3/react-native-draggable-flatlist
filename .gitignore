@@ -5,7 +5,7 @@ coverage/
 secret_play.json
 yarn-error.log
 
-todo/yarn.lock
+#lock files
 yarn.lock
 
 # secrets
