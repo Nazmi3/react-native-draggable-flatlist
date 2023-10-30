@@ -9,7 +9,6 @@ export const todoSlice = createSlice({
       return action.payload;
     },
     setTODOs: (state, action) => {
-      console.log("settodo", action.payload);
       return action.payload;
     },
     deleteTodo: (state) => {

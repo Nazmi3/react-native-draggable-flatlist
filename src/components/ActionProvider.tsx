@@ -90,9 +90,7 @@ const ActionProvider = (
         onPointerUp={undefined}
         onPointerUpCapture={undefined}
       />
-      <View style={{ padding: 10, flex: 1, justifyContent: "space-between" }}>
-        {children}
-      </View>
+      <View style={{ padding: 10, flex: 1 }}>{children}</View>
 
       <Modal
         animationType="fade"

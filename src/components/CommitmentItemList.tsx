@@ -91,10 +91,9 @@ const SwipeableButton = ({
             activeOpacity={0.9}
             onLongPress={drag}
             onPress={() => {
-              console.log("button clicked");
+              console.log("button clicked", item.text);
               navigation.navigate("CommitmentDetails", {
                 commitment: item,
-                onGoBack: () => console.log("Will go back"),
               });
             }}
             delayLongPress={200}

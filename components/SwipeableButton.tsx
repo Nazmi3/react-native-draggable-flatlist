@@ -95,7 +95,7 @@ const SwipeableButton = ({
         renderRightActions(progress, dragX, () => console.log("on click"))
       }
       onSwipeableWillOpen={() => {
-        console.log("on swipeable will open", item);
+        console.log("on swipeable will open");
         deleteTODO(item);
         closeRow();
       }}

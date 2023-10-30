@@ -19,6 +19,15 @@ function dropTable(table) {
     tx.executeSql(`drop table ${table};`);
   });
 }
+
+function addTableColumn(table, column, dataType) {
+  let alterationCommand = `ALTER TABLE ${table}
+  ADD ${column} ${dataType};`;
+  console.log("execute ", alterationCommand);
+  db.transaction((tx) => {
+    tx.executeSql(alterationCommand);
+  });
+}
 export const execute = (sql) => {
   db.transaction(
     function (txn) {
@@ -116,7 +125,12 @@ export const remove = (table, id): Promise<any> => {
     );
   });
 };
-export const update = (table, column, data): Promise<any> => {
+
+type Commitment = {
+  id: number;
+};
+
+export const update = (table, column, data: Commitment): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
     db.transaction(
       function (txn) {
@@ -129,9 +143,11 @@ export const update = (table, column, data): Promise<any> => {
       },
       (error) => {
         if (table === "commitment") {
-          // temp code for migration
-          dropTable(table);
-          addTable(table);
+          // code for auto migration
+          if (error.message.includes("no such column")) {
+            console.log("db column missing");
+            addTableColumn(table, column, typeof data[column]);
+          }
         }
         console.log(`error update ${table}`, error);
         reject(error);

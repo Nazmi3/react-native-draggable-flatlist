@@ -18,7 +18,7 @@ import { add, update, remove } from "../manager/sqlite";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { v4 as uuid } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
-import CommitmentDetails from "./CommitmentDetails";
+import CommitmentDetails from "./Commitment";
 import { createSharedElementStackNavigator } from "react-navigation-shared-element";
 import {
   addcommitment,
@@ -89,6 +89,8 @@ export default function Home({ navigation }) {
   );
 
   useEffect(() => {
+    console.log("useEffect commitments");
+
     const millisstart = new Date().getTime();
 
     let draggableItemT = [];
@@ -218,15 +220,15 @@ export default function Home({ navigation }) {
     setModalVisible(true);
   }
 
-  async function updateTODOs(newTODOs) {
-    try {
-      setTODOs(newTODOs);
-      // LayoutAnimation.configureNext(layoutAnimConfig);
-      await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));
-    } catch (error) {
-      // Error saving data
-    }
-  }
+  // async function updateTODOs(newTODOs) {
+  //   try {
+  //     setTODOs(newTODOs);
+  //     // LayoutAnimation.configureNext(layoutAnimConfig);
+  //     await AsyncStorage.setItem("TODOs", JSON.stringify(newTODOs));
+  //   } catch (error) {
+  //     // Error saving data
+  //   }
+  // }
 
   async function addCommitment(newCommitment, TODOs) {
     newCommitment.time = new Date().toISOString();
@@ -323,7 +325,6 @@ export default function Home({ navigation }) {
                 style={{
                   flexDirection: "row",
                   justifyContent: "center",
-                  backgroundColor: "white",
                   position: "absolute",
                   bottom: 15,
                 }}

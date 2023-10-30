@@ -43,17 +43,17 @@ export function getDraggableItems(newTODOs) {
         });
       }
     }
-    let padding = new Date(newTODO.time).toDateString();
+    let paddingId = new Date().getTime();
     // push red padding if clash with next item
     let clashedWithPrevious = lastTODO
       ? lastTODO.time + lastTODO.duration > newTODO.time
       : false;
     if (clashedWithPrevious) {
       newDraggableItems.push({
-        id: padding,
-        key: `${padding}_padding`,
+        id: paddingId,
+        key: `${paddingId}_padding`,
         type: "padding",
-        label: padding,
+        label: "Hai youu",
       });
     }
     newDraggableItems.push(

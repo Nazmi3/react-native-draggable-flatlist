@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  Slider,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
+import { Modal, View, Text, Pressable } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -133,13 +126,20 @@ export default ({
       <View style={{ backgroundColor: "white" }}>
         <VStack>
           <HStack>
-            <Pressable onPress={() => setCurrentMonth(currentMonth - 1)}>
-              <Text style={{ width: 30 }}>{"<"}</Text>
+            <Pressable
+              onPress={() => setCurrentMonth(currentMonth - 1)}
+              style={{ padding: 10 }}
+            >
+              <Text style={{}}>{"<"}</Text>
             </Pressable>
-
-            <Text>{currentMonth + 1}</Text>
-            <Pressable onPress={() => setCurrentMonth(currentMonth + 1)}>
-              <Text style={{ width: 30 }}>{">"}</Text>
+            <View style={{ padding: 10 }}>
+              <Text>{currentMonth + 1}</Text>
+            </View>
+            <Pressable
+              onPress={() => setCurrentMonth(currentMonth + 1)}
+              style={{ padding: 10 }}
+            >
+              <Text style={{}}>{">"}</Text>
             </Pressable>
           </HStack>
           <HStack>
@@ -155,26 +155,37 @@ export default ({
             table.map((row) => (
               <HStack>
                 {row.map((item) => (
-                  <Pressable onPress={() => handleItemPress(item)}>
-                    <Text
+                  <Pressable onPress={() => handleItemPress(item)} style={{}}>
+                    <View
                       style={{
                         width: 20,
                         marginLeft: 15,
                         marginRight: 15,
-                        backgroundColor: item.selected
-                          ? "green"
-                          : item.backgroundColor,
-                        borderColor: item.borderColor ?? "white",
-                        borderWidth: 1,
                       }}
                     >
-                      {item.display}
-                    </Text>
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color:
+                            item.backgroundColor || item.selected
+                              ? "white"
+                              : undefined,
+                          backgroundColor: item.selected
+                            ? "green"
+                            : item.backgroundColor,
+                          borderColor: item.borderColor ?? "white",
+                          borderWidth: 1,
+                          borderRadius: 150 / 2,
+                        }}
+                      >
+                        {item.display}
+                      </Text>
+                    </View>
                   </Pressable>
                 ))}
               </HStack>
             ))}
-          <HStack spacing={10}>
+          <HStack spacing={10} style={{ margin: 10 }}>
             <Pressable onPress={onCancel}>
               <Text>Cancel</Text>
             </Pressable>
@@ -184,6 +195,14 @@ export default ({
           </HStack>
         </VStack>
       </View>
+      <View
+        style={{
+          backgroundColor: "black",
+          opacity: 0.5,
+          width: "100%",
+          height: "100%",
+        }}
+      ></View>
     </Modal>
   );
 };

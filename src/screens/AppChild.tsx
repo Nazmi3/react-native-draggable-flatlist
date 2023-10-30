@@ -1,6 +1,6 @@
 import React from "react";
 import "react-native-gesture-handler";
-import Todo from "./Todo";
+import Todo from "./Todos";
 import TodoDetails from "./TodoDetails";
 import { Platform, UIManager } from "react-native";
 import { createSharedElementStackNavigator } from "react-navigation-shared-element";

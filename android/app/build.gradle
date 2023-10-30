@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'com.github.triplet.play' version "3.7.0"
 }
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -119,7 +121,9 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
  * give correct results when using with locales other than en-US.  Note that
  * this variant is about 6MiB larger per architecture than default.
  */
-def jscFlavor = 'org.webkit:android-jsc:+'
+// original
+// def jscFlavor = 'org.webkit:android-jsc:+'
+   def jscFlavor = 'org.webkit:android-jsc-intl:+'
 
 /**
  * Whether to enable the Hermes VM.
@@ -141,14 +145,21 @@ def reactNativeArchitectures() {
 android {
     ndkVersion rootProject.ext.ndkVersion
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion 31
 
+    def versionPropsFile = file('version.properties')
+    Properties versionProps = new Properties()
+    versionProps.load(new FileInputStream(versionPropsFile))
+    if (versionPropsFile.canRead()) {
     defaultConfig {
         applicationId 'com.nazmi3.todo'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.0.2"
+        compileSdkVersion 31
+
+        // versionCode 8
+        versionCode versionProps['VERSION_NUMBER'].toInteger()
+        versionName versionProps['VERSION_STRING']
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -180,6 +191,9 @@ android {
                 }
             }
         }
+    }
+    } else {
+        throw new FileNotFoundException("Could not read version.properties!")
     }
 
     if (isNewArchitectureEnabled()) {
@@ -255,6 +269,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
 
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -308,6 +325,8 @@ dependencies {
 
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation project(':react-native-share')
+    implementation project(':react-native-sensors')
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
@@ -365,6 +384,13 @@ if (isNewArchitectureEnabled()) {
         }
     }
 }
+
+// kotlinOptions {
+//     jvmTarget = "1.8"
+//     freeCompilerArgs += [
+//             "-Xuse-experimental=kotlinx.ExperimentalStdlibApi",
+//             "-Xuse-experimental=kotlin.ExperimentalStdlibApi"]
+// }
 
 // Run this once to be able to run the application with BUCK
 // puts all compile dependencies into folder libs for BUCK to use

@@ -130,13 +130,13 @@ export default ({
         >
           Export
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           onPress={() => {
             navigation.navigate("Experimental", {});
           }}
         >
           Experimental
-        </MenuItem>
+        </MenuItem> */}
       </Menu>
     </View>
   );

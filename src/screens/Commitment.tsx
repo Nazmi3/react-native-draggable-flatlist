@@ -11,6 +11,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { update } from "../manager/sqlite";
 import { useDispatch } from "react-redux";
 import { refreshCommitments } from "../store/commitmentSlice";
+import { CheckBox } from "react-native-elements";
 
 export const REPEAT = ["freeTime", "day", "weekDay", "month", "solatTime"];
 
@@ -26,23 +27,13 @@ const Details = ({ navigation, route: { params } }) => {
   const [duration, setDuration] = useState(params.commitment.duration);
   const [paidDate, setPaidDate] = useState(new Date(params.commitment.time));
   const [pickerMode, setPickerMode] = useState<string | null>(null);
+  const [inTodos, setInTodos] = useState(params.commitment.inTodos);
 
   const d = useDispatch();
 
   useEffect(() => {
     console.log("commitment", commitment);
   }, [commitment]);
-
-  function getStringTime(unix) {
-    return moment(unix).format("hh:mm a");
-  }
-
-  function nextRepeatType(type) {
-    let currentIndex = REPEAT.findIndex((key) => key === type);
-    let isLastIndex = currentIndex === REPEAT.length - 1;
-    let nextIndex = isLastIndex ? 0 : currentIndex + 1;
-    return REPEAT[nextIndex];
-  }
 
   function getStringDate(unix) {
     return moment(unix).format("DD/MM/YYYY");
@@ -101,6 +92,7 @@ const Details = ({ navigation, route: { params } }) => {
             >
               <Text>RM </Text>
               <TextInput
+                style={{ minWidth: 100 }}
                 keyboardType={"phone-pad"}
                 defaultValue={commitment.cost?.toString()}
                 onSubmitEditing={({ nativeEvent: { text } }) => {
@@ -112,6 +104,24 @@ const Details = ({ navigation, route: { params } }) => {
               />
             </HStack>
           )}
+          <HStack
+            spacing={0}
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Text>Include in todo</Text>
+            <CheckBox
+              checked={inTodos}
+              size={18}
+              onPress={() => {
+                setInTodos(!inTodos);
+                let newCommitment = { ...commitment, inTodos: !inTodos };
+                update("commitment", "inTodos", newCommitment);
+              }}
+            />
+          </HStack>
           <Pressable onPress={() => setPickerMode("date")}>
             <Text>{`Last paid: ${getStringDate(commitment.time)}`}</Text>
           </Pressable>
