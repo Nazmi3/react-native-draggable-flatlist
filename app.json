@@ -3,7 +3,7 @@
     "name": "ToDo",
     "slug": "todo",
     "owner": "nazmi3",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/background.jpg",
     "scheme": "myapp",
