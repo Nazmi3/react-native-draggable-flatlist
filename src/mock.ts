@@ -6,7 +6,7 @@ export const mockData = [
     timestamp: 1,
   },
   {
-    x: 10,
+    x: 11,
     y: 1,
     z: 1.12,
     timestamp: 2,
