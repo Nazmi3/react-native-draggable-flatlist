@@ -5,7 +5,7 @@
     "owner": "nazmi3",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/background.jpg",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
